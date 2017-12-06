@@ -1,0 +1,668 @@
+Train FCN
+I1206 19:41:32.306502 16500 caffe.cpp:218] Using GPUs 0
+I1206 19:41:32.330332 16500 caffe.cpp:223] GPU 0: GeForce GTX 1080
+I1206 19:41:32.523377 16500 solver.cpp:44] Initializing solver from parameters:
+test_iter: 120
+test_interval: 1000
+base_lr: 0.05
+display: 0
+max_iter: 10000
+lr_policy: "step"
+gamma: 0.1
+momentum: 0.9
+weight_decay: 0.0005
+stepsize: 2500
+snapshot: 500
+snapshot_prefix: "/home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn"
+solver_mode: GPU
+device_id: 0
+net: "/home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn.prototxt"
+train_state {
+  level: 0
+  stage: ""
+}
+type: "SGD"
+I1206 19:41:32.523572 16500 solver.cpp:87] Creating training net from net file: /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn.prototxt
+I1206 19:41:32.523777 16500 net.cpp:294] The NetState phase (0) differed from the phase (1) specified by a rule in layer dataset_name
+I1206 19:41:32.523783 16500 net.cpp:294] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy
+I1206 19:41:32.523850 16500 net.cpp:51] Initializing net from parameters:
+name: "SimpleFCN"
+state {
+  phase: TRAIN
+  level: 0
+  stage: ""
+}
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "/home/glebg/dev/deep-learning/train.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+  }
+}
+layer {
+  name: "hidden"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden"
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "sigmoid"
+  type: "Sigmoid"
+  bottom: "hidden"
+  top: "sigmoid"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "sigmoid"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+I1206 19:41:32.523926 16500 layer_factory.hpp:77] Creating layer gender
+I1206 19:41:32.523960 16500 net.cpp:84] Creating Layer gender
+I1206 19:41:32.523968 16500 net.cpp:380] gender -> data
+I1206 19:41:32.523984 16500 net.cpp:380] gender -> label
+I1206 19:41:32.524020 16500 image_data_layer.cpp:38] Opening file /home/glebg/dev/deep-learning/train.lst
+I1206 19:41:32.539209 16500 image_data_layer.cpp:63] A total of 47000 images.
+I1206 19:41:32.618224 16500 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 19:41:32.655977 16500 net.cpp:122] Setting up gender
+I1206 19:41:32.655994 16500 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 19:41:32.656021 16500 net.cpp:129] Top shape: 100 (100)
+I1206 19:41:32.656024 16500 net.cpp:137] Memory required for data: 27000400
+I1206 19:41:32.656029 16500 layer_factory.hpp:77] Creating layer hidden
+I1206 19:41:32.656039 16500 net.cpp:84] Creating Layer hidden
+I1206 19:41:32.656059 16500 net.cpp:406] hidden <- data
+I1206 19:41:32.656067 16500 net.cpp:380] hidden -> hidden
+I1206 19:41:33.048422 16500 net.cpp:122] Setting up hidden
+I1206 19:41:33.048455 16500 net.cpp:129] Top shape: 100 1000 (100000)
+I1206 19:41:33.048458 16500 net.cpp:137] Memory required for data: 27400400
+I1206 19:41:33.048490 16500 layer_factory.hpp:77] Creating layer sigmoid
+I1206 19:41:33.048498 16500 net.cpp:84] Creating Layer sigmoid
+I1206 19:41:33.048518 16500 net.cpp:406] sigmoid <- hidden
+I1206 19:41:33.048527 16500 net.cpp:380] sigmoid -> sigmoid
+I1206 19:41:33.048564 16500 net.cpp:122] Setting up sigmoid
+I1206 19:41:33.048568 16500 net.cpp:129] Top shape: 100 1000 (100000)
+I1206 19:41:33.048570 16500 net.cpp:137] Memory required for data: 27800400
+I1206 19:41:33.048573 16500 layer_factory.hpp:77] Creating layer ip
+I1206 19:41:33.048601 16500 net.cpp:84] Creating Layer ip
+I1206 19:41:33.048604 16500 net.cpp:406] ip <- sigmoid
+I1206 19:41:33.048609 16500 net.cpp:380] ip -> ip
+I1206 19:41:33.049537 16500 net.cpp:122] Setting up ip
+I1206 19:41:33.049567 16500 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:41:33.049571 16500 net.cpp:137] Memory required for data: 27801200
+I1206 19:41:33.049595 16500 layer_factory.hpp:77] Creating layer loss
+I1206 19:41:33.049602 16500 net.cpp:84] Creating Layer loss
+I1206 19:41:33.049604 16500 net.cpp:406] loss <- ip
+I1206 19:41:33.049608 16500 net.cpp:406] loss <- label
+I1206 19:41:33.049613 16500 net.cpp:380] loss -> loss
+I1206 19:41:33.049623 16500 layer_factory.hpp:77] Creating layer loss
+I1206 19:41:33.049710 16500 net.cpp:122] Setting up loss
+I1206 19:41:33.049715 16500 net.cpp:129] Top shape: (1)
+I1206 19:41:33.049717 16500 net.cpp:132]     with loss weight 1
+I1206 19:41:33.049736 16500 net.cpp:137] Memory required for data: 27801204
+I1206 19:41:33.049739 16500 net.cpp:198] loss needs backward computation.
+I1206 19:41:33.049743 16500 net.cpp:198] ip needs backward computation.
+I1206 19:41:33.049746 16500 net.cpp:198] sigmoid needs backward computation.
+I1206 19:41:33.049748 16500 net.cpp:198] hidden needs backward computation.
+I1206 19:41:33.049751 16500 net.cpp:200] gender does not need backward computation.
+I1206 19:41:33.049753 16500 net.cpp:242] This network produces output loss
+I1206 19:41:33.049758 16500 net.cpp:255] Network initialization done.
+I1206 19:41:33.049854 16500 solver.cpp:172] Creating test net (#0) specified by net file: /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn.prototxt
+I1206 19:41:33.049883 16500 net.cpp:294] The NetState phase (1) differed from the phase (0) specified by a rule in layer gender
+I1206 19:41:33.049921 16500 net.cpp:51] Initializing net from parameters:
+name: "SimpleFCN"
+state {
+  phase: TEST
+}
+layer {
+  name: "dataset_name"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "/home/glebg/dev/deep-learning/test.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+  }
+}
+layer {
+  name: "hidden"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden"
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "sigmoid"
+  type: "Sigmoid"
+  bottom: "hidden"
+  top: "sigmoid"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "sigmoid"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+I1206 19:41:33.049953 16500 layer_factory.hpp:77] Creating layer dataset_name
+I1206 19:41:33.049962 16500 net.cpp:84] Creating Layer dataset_name
+I1206 19:41:33.049965 16500 net.cpp:380] dataset_name -> data
+I1206 19:41:33.049970 16500 net.cpp:380] dataset_name -> label
+I1206 19:41:33.049975 16500 image_data_layer.cpp:38] Opening file /home/glebg/dev/deep-learning/test.lst
+I1206 19:41:33.053503 16500 image_data_layer.cpp:63] A total of 12000 images.
+I1206 19:41:33.054044 16500 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 19:41:33.092320 16500 net.cpp:122] Setting up dataset_name
+I1206 19:41:33.092375 16500 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 19:41:33.092386 16500 net.cpp:129] Top shape: 100 (100)
+I1206 19:41:33.092393 16500 net.cpp:137] Memory required for data: 27000400
+I1206 19:41:33.092404 16500 layer_factory.hpp:77] Creating layer label_dataset_name_1_split
+I1206 19:41:33.092419 16500 net.cpp:84] Creating Layer label_dataset_name_1_split
+I1206 19:41:33.092433 16500 net.cpp:406] label_dataset_name_1_split <- label
+I1206 19:41:33.092444 16500 net.cpp:380] label_dataset_name_1_split -> label_dataset_name_1_split_0
+I1206 19:41:33.092458 16500 net.cpp:380] label_dataset_name_1_split -> label_dataset_name_1_split_1
+I1206 19:41:33.092499 16500 net.cpp:122] Setting up label_dataset_name_1_split
+I1206 19:41:33.092512 16500 net.cpp:129] Top shape: 100 (100)
+I1206 19:41:33.092526 16500 net.cpp:129] Top shape: 100 (100)
+I1206 19:41:33.092545 16500 net.cpp:137] Memory required for data: 27001200
+I1206 19:41:33.092552 16500 layer_factory.hpp:77] Creating layer hidden
+I1206 19:41:33.092566 16500 net.cpp:84] Creating Layer hidden
+I1206 19:41:33.092573 16500 net.cpp:406] hidden <- data
+I1206 19:41:33.092583 16500 net.cpp:380] hidden -> hidden
+I1206 19:41:33.409934 16500 net.cpp:122] Setting up hidden
+I1206 19:41:33.409970 16500 net.cpp:129] Top shape: 100 1000 (100000)
+I1206 19:41:33.409971 16500 net.cpp:137] Memory required for data: 27401200
+I1206 19:41:33.409996 16500 layer_factory.hpp:77] Creating layer sigmoid
+I1206 19:41:33.410018 16500 net.cpp:84] Creating Layer sigmoid
+I1206 19:41:33.410022 16500 net.cpp:406] sigmoid <- hidden
+I1206 19:41:33.410028 16500 net.cpp:380] sigmoid -> sigmoid
+I1206 19:41:33.410064 16500 net.cpp:122] Setting up sigmoid
+I1206 19:41:33.410069 16500 net.cpp:129] Top shape: 100 1000 (100000)
+I1206 19:41:33.410071 16500 net.cpp:137] Memory required for data: 27801200
+I1206 19:41:33.410074 16500 layer_factory.hpp:77] Creating layer ip
+I1206 19:41:33.410079 16500 net.cpp:84] Creating Layer ip
+I1206 19:41:33.410084 16500 net.cpp:406] ip <- sigmoid
+I1206 19:41:33.410087 16500 net.cpp:380] ip -> ip
+I1206 19:41:33.410163 16500 net.cpp:122] Setting up ip
+I1206 19:41:33.410168 16500 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:41:33.410171 16500 net.cpp:137] Memory required for data: 27802000
+I1206 19:41:33.410176 16500 layer_factory.hpp:77] Creating layer ip_ip_0_split
+I1206 19:41:33.410179 16500 net.cpp:84] Creating Layer ip_ip_0_split
+I1206 19:41:33.410182 16500 net.cpp:406] ip_ip_0_split <- ip
+I1206 19:41:33.410185 16500 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_0
+I1206 19:41:33.410189 16500 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_1
+I1206 19:41:33.410212 16500 net.cpp:122] Setting up ip_ip_0_split
+I1206 19:41:33.410215 16500 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:41:33.410218 16500 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:41:33.410223 16500 net.cpp:137] Memory required for data: 27803600
+I1206 19:41:33.410224 16500 layer_factory.hpp:77] Creating layer loss
+I1206 19:41:33.410228 16500 net.cpp:84] Creating Layer loss
+I1206 19:41:33.410230 16500 net.cpp:406] loss <- ip_ip_0_split_0
+I1206 19:41:33.410233 16500 net.cpp:406] loss <- label_dataset_name_1_split_0
+I1206 19:41:33.410238 16500 net.cpp:380] loss -> loss
+I1206 19:41:33.410249 16500 layer_factory.hpp:77] Creating layer loss
+I1206 19:41:33.410318 16500 net.cpp:122] Setting up loss
+I1206 19:41:33.410323 16500 net.cpp:129] Top shape: (1)
+I1206 19:41:33.410326 16500 net.cpp:132]     with loss weight 1
+I1206 19:41:33.410347 16500 net.cpp:137] Memory required for data: 27803604
+I1206 19:41:33.410351 16500 layer_factory.hpp:77] Creating layer accuracy
+I1206 19:41:33.410358 16500 net.cpp:84] Creating Layer accuracy
+I1206 19:41:33.410360 16500 net.cpp:406] accuracy <- ip_ip_0_split_1
+I1206 19:41:33.410363 16500 net.cpp:406] accuracy <- label_dataset_name_1_split_1
+I1206 19:41:33.410367 16500 net.cpp:380] accuracy -> accuracy
+I1206 19:41:33.410373 16500 net.cpp:122] Setting up accuracy
+I1206 19:41:33.410377 16500 net.cpp:129] Top shape: (1)
+I1206 19:41:33.410378 16500 net.cpp:137] Memory required for data: 27803608
+I1206 19:41:33.410380 16500 net.cpp:200] accuracy does not need backward computation.
+I1206 19:41:33.410383 16500 net.cpp:198] loss needs backward computation.
+I1206 19:41:33.410387 16500 net.cpp:198] ip_ip_0_split needs backward computation.
+I1206 19:41:33.410388 16500 net.cpp:198] ip needs backward computation.
+I1206 19:41:33.410390 16500 net.cpp:198] sigmoid needs backward computation.
+I1206 19:41:33.410393 16500 net.cpp:198] hidden needs backward computation.
+I1206 19:41:33.410395 16500 net.cpp:200] label_dataset_name_1_split does not need backward computation.
+I1206 19:41:33.410398 16500 net.cpp:200] dataset_name does not need backward computation.
+I1206 19:41:33.410400 16500 net.cpp:242] This network produces output accuracy
+I1206 19:41:33.410403 16500 net.cpp:242] This network produces output loss
+I1206 19:41:33.410409 16500 net.cpp:255] Network initialization done.
+I1206 19:41:33.410441 16500 solver.cpp:56] Solver scaffolding done.
+I1206 19:41:33.410559 16500 caffe.cpp:248] Starting Optimization
+I1206 19:41:33.410564 16500 solver.cpp:272] Solving SimpleFCN
+I1206 19:41:33.410567 16500 solver.cpp:273] Learning Rate Policy: step
+I1206 19:41:33.411854 16500 solver.cpp:330] Iteration 0, Testing net (#0)
+I1206 19:41:33.411865 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:41:33.502218 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:41:39.072796 16500 solver.cpp:397]     Test net output #0: accuracy = 0.217583
+I1206 19:41:39.072818 16500 solver.cpp:397]     Test net output #1: loss = 1.16105 (* 1 = 1.16105 loss)
+I1206 19:42:02.081540 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_500.caffemodel
+I1206 19:42:02.847825 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_500.solverstate
+I1206 19:42:21.287729 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:42:26.398824 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_1000.caffemodel
+I1206 19:42:27.141441 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_1000.solverstate
+I1206 19:42:27.440758 16500 solver.cpp:330] Iteration 1000, Testing net (#0)
+I1206 19:42:27.440778 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:42:32.912901 16500 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 19:42:32.912977 16500 solver.cpp:397]     Test net output #1: loss = 1.38892 (* 1 = 1.38892 loss)
+I1206 19:42:56.415315 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_1500.caffemodel
+I1206 19:42:57.162004 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_1500.solverstate
+I1206 19:43:10.488158 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:43:21.069896 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_2000.caffemodel
+I1206 19:43:21.844949 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_2000.solverstate
+I1206 19:43:22.148370 16500 solver.cpp:330] Iteration 2000, Testing net (#0)
+I1206 19:43:22.148388 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:43:27.579653 16500 solver.cpp:397]     Test net output #0: accuracy = 0.52575
+I1206 19:43:27.579690 16500 solver.cpp:397]     Test net output #1: loss = 0.659388 (* 1 = 0.659388 loss)
+I1206 19:43:50.975322 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_2500.caffemodel
+I1206 19:43:51.934948 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_2500.solverstate
+I1206 19:44:00.149562 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:44:15.919647 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_3000.caffemodel
+I1206 19:44:17.040169 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_3000.solverstate
+I1206 19:44:17.345820 16500 solver.cpp:330] Iteration 3000, Testing net (#0)
+I1206 19:44:17.345839 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:44:22.759305 16500 solver.cpp:397]     Test net output #0: accuracy = 0.7965
+I1206 19:44:22.759397 16500 solver.cpp:397]     Test net output #1: loss = 0.463847 (* 1 = 0.463847 loss)
+I1206 19:44:45.812429 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_3500.caffemodel
+I1206 19:44:47.280097 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_3500.solverstate
+I1206 19:44:50.280112 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:45:11.064887 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_4000.caffemodel
+I1206 19:45:12.537758 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_4000.solverstate
+I1206 19:45:12.845741 16500 solver.cpp:330] Iteration 4000, Testing net (#0)
+I1206 19:45:12.845762 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:45:18.381786 16500 solver.cpp:397]     Test net output #0: accuracy = 0.811917
+I1206 19:45:18.381824 16500 solver.cpp:397]     Test net output #1: loss = 0.437312 (* 1 = 0.437312 loss)
+I1206 19:45:39.050760 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:45:41.542455 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_4500.caffemodel
+I1206 19:45:43.043581 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_4500.solverstate
+I1206 19:46:06.250701 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_5000.caffemodel
+I1206 19:46:07.741116 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_5000.solverstate
+I1206 19:46:08.039575 16500 solver.cpp:330] Iteration 5000, Testing net (#0)
+I1206 19:46:08.039595 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:46:13.467314 16500 solver.cpp:397]     Test net output #0: accuracy = 0.8215
+I1206 19:46:13.467398 16500 solver.cpp:397]     Test net output #1: loss = 0.426986 (* 1 = 0.426986 loss)
+I1206 19:46:29.077121 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:46:36.589606 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_5500.caffemodel
+I1206 19:46:37.924218 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_5500.solverstate
+I1206 19:47:00.982434 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_6000.caffemodel
+I1206 19:47:02.464469 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_6000.solverstate
+I1206 19:47:02.770581 16500 solver.cpp:330] Iteration 6000, Testing net (#0)
+I1206 19:47:02.770601 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:47:08.372699 16500 solver.cpp:397]     Test net output #0: accuracy = 0.828583
+I1206 19:47:08.372721 16500 solver.cpp:397]     Test net output #1: loss = 0.40932 (* 1 = 0.40932 loss)
+I1206 19:47:18.892423 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:47:32.004616 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_6500.caffemodel
+I1206 19:47:33.300631 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_6500.solverstate
+I1206 19:47:56.783238 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_7000.caffemodel
+I1206 19:47:58.133445 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_7000.solverstate
+I1206 19:47:58.449229 16500 solver.cpp:330] Iteration 7000, Testing net (#0)
+I1206 19:47:58.449249 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:48:03.821440 16500 solver.cpp:397]     Test net output #0: accuracy = 0.830917
+I1206 19:48:03.821558 16500 solver.cpp:397]     Test net output #1: loss = 0.407888 (* 1 = 0.407888 loss)
+I1206 19:48:09.021497 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:48:27.094327 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_7500.caffemodel
+I1206 19:48:28.556502 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_7500.solverstate
+I1206 19:48:52.007742 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_8000.caffemodel
+I1206 19:48:53.469146 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_8000.solverstate
+I1206 19:48:53.782667 16500 solver.cpp:330] Iteration 8000, Testing net (#0)
+I1206 19:48:53.782709 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:48:59.326014 16500 solver.cpp:397]     Test net output #0: accuracy = 0.8305
+I1206 19:48:59.326050 16500 solver.cpp:397]     Test net output #1: loss = 0.406135 (* 1 = 0.406135 loss)
+I1206 19:48:59.467350 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:49:22.138501 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_8500.caffemodel
+I1206 19:49:23.596226 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_8500.solverstate
+I1206 19:49:47.022765 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_9000.caffemodel
+I1206 19:49:48.591557 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_9000.solverstate
+I1206 19:49:48.896652 16500 solver.cpp:330] Iteration 9000, Testing net (#0)
+I1206 19:49:48.896682 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:49:49.280795 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:49:54.420310 16500 solver.cpp:397]     Test net output #0: accuracy = 0.83075
+I1206 19:49:54.420398 16500 solver.cpp:397]     Test net output #1: loss = 0.405894 (* 1 = 0.405894 loss)
+I1206 19:50:17.391326 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_9500.caffemodel
+I1206 19:50:18.829156 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_9500.solverstate
+I1206 19:50:37.130071 16500 blocking_queue.cpp:49] Waiting for data
+I1206 19:50:41.840196 16500 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_10000.caffemodel
+I1206 19:50:43.255995 16500 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_1_sigmoid/gender_fcn/gender_fcn_iter_10000.solverstate
+I1206 19:50:43.557991 16500 solver.cpp:330] Iteration 10000, Testing net (#0)
+I1206 19:50:43.558010 16500 net.cpp:676] Ignoring source layer gender
+I1206 19:50:48.911388 16500 solver.cpp:397]     Test net output #0: accuracy = 0.830833
+I1206 19:50:48.911427 16500 solver.cpp:397]     Test net output #1: loss = 0.405881 (* 1 = 0.405881 loss)
+I1206 19:50:48.911430 16500 solver.cpp:315] Optimization Done.
+I1206 19:50:48.911433 16500 caffe.cpp:259] Optimization Done.
+Test FCN
+I1206 19:54:31.031215 17301 caffe.cpp:284] Use CPU.
+I1206 19:54:31.245638 17301 net.cpp:294] The NetState phase (1) differed from the phase (0) specified by a rule in layer gender
+I1206 19:54:31.245725 17301 net.cpp:51] Initializing net from parameters:
+name: "SimpleFCN"
+state {
+  phase: TEST
+  level: 0
+  stage: ""
+}
+layer {
+  name: "dataset_name"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "/home/glebg/dev/deep-learning/test.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+  }
+}
+layer {
+  name: "hidden"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden"
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "sigmoid"
+  type: "Sigmoid"
+  bottom: "hidden"
+  top: "sigmoid"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "sigmoid"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+I1206 19:54:31.245779 17301 layer_factory.hpp:77] Creating layer dataset_name
+I1206 19:54:31.245805 17301 net.cpp:84] Creating Layer dataset_name
+I1206 19:54:31.245810 17301 net.cpp:380] dataset_name -> data
+I1206 19:54:31.245826 17301 net.cpp:380] dataset_name -> label
+I1206 19:54:31.245857 17301 image_data_layer.cpp:38] Opening file /home/glebg/dev/deep-learning/test.lst
+I1206 19:54:31.249768 17301 image_data_layer.cpp:63] A total of 12000 images.
+I1206 19:54:31.330029 17301 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 19:54:31.354707 17301 net.cpp:122] Setting up dataset_name
+I1206 19:54:31.354755 17301 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 19:54:31.354764 17301 net.cpp:129] Top shape: 100 (100)
+I1206 19:54:31.354768 17301 net.cpp:137] Memory required for data: 27000400
+I1206 19:54:31.354774 17301 layer_factory.hpp:77] Creating layer label_dataset_name_1_split
+I1206 19:54:31.354794 17301 net.cpp:84] Creating Layer label_dataset_name_1_split
+I1206 19:54:31.354799 17301 net.cpp:406] label_dataset_name_1_split <- label
+I1206 19:54:31.354809 17301 net.cpp:380] label_dataset_name_1_split -> label_dataset_name_1_split_0
+I1206 19:54:31.354826 17301 net.cpp:380] label_dataset_name_1_split -> label_dataset_name_1_split_1
+I1206 19:54:31.354836 17301 net.cpp:122] Setting up label_dataset_name_1_split
+I1206 19:54:31.354840 17301 net.cpp:129] Top shape: 100 (100)
+I1206 19:54:31.354843 17301 net.cpp:129] Top shape: 100 (100)
+I1206 19:54:31.354846 17301 net.cpp:137] Memory required for data: 27001200
+I1206 19:54:31.354849 17301 layer_factory.hpp:77] Creating layer hidden
+I1206 19:54:31.354856 17301 net.cpp:84] Creating Layer hidden
+I1206 19:54:31.354858 17301 net.cpp:406] hidden <- data
+I1206 19:54:31.354863 17301 net.cpp:380] hidden -> hidden
+I1206 19:54:31.865018 17301 net.cpp:122] Setting up hidden
+I1206 19:54:31.865058 17301 net.cpp:129] Top shape: 100 1000 (100000)
+I1206 19:54:31.865062 17301 net.cpp:137] Memory required for data: 27401200
+I1206 19:54:31.865089 17301 layer_factory.hpp:77] Creating layer sigmoid
+I1206 19:54:31.865097 17301 net.cpp:84] Creating Layer sigmoid
+I1206 19:54:31.865100 17301 net.cpp:406] sigmoid <- hidden
+I1206 19:54:31.865105 17301 net.cpp:380] sigmoid -> sigmoid
+I1206 19:54:31.865139 17301 net.cpp:122] Setting up sigmoid
+I1206 19:54:31.865141 17301 net.cpp:129] Top shape: 100 1000 (100000)
+I1206 19:54:31.865144 17301 net.cpp:137] Memory required for data: 27801200
+I1206 19:54:31.865146 17301 layer_factory.hpp:77] Creating layer ip
+I1206 19:54:31.865154 17301 net.cpp:84] Creating Layer ip
+I1206 19:54:31.865156 17301 net.cpp:406] ip <- sigmoid
+I1206 19:54:31.865160 17301 net.cpp:380] ip -> ip
+I1206 19:54:31.865180 17301 net.cpp:122] Setting up ip
+I1206 19:54:31.865183 17301 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:54:31.865201 17301 net.cpp:137] Memory required for data: 27802000
+I1206 19:54:31.865221 17301 layer_factory.hpp:77] Creating layer ip_ip_0_split
+I1206 19:54:31.865226 17301 net.cpp:84] Creating Layer ip_ip_0_split
+I1206 19:54:31.865229 17301 net.cpp:406] ip_ip_0_split <- ip
+I1206 19:54:31.865248 17301 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_0
+I1206 19:54:31.865253 17301 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_1
+I1206 19:54:31.865259 17301 net.cpp:122] Setting up ip_ip_0_split
+I1206 19:54:31.865263 17301 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:54:31.865267 17301 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:54:31.865269 17301 net.cpp:137] Memory required for data: 27803600
+I1206 19:54:31.865272 17301 layer_factory.hpp:77] Creating layer loss
+I1206 19:54:31.865276 17301 net.cpp:84] Creating Layer loss
+I1206 19:54:31.865278 17301 net.cpp:406] loss <- ip_ip_0_split_0
+I1206 19:54:31.865283 17301 net.cpp:406] loss <- label_dataset_name_1_split_0
+I1206 19:54:31.865286 17301 net.cpp:380] loss -> loss
+I1206 19:54:31.865295 17301 layer_factory.hpp:77] Creating layer loss
+I1206 19:54:31.865305 17301 net.cpp:122] Setting up loss
+I1206 19:54:31.865309 17301 net.cpp:129] Top shape: (1)
+I1206 19:54:31.865311 17301 net.cpp:132]     with loss weight 1
+I1206 19:54:31.865324 17301 net.cpp:137] Memory required for data: 27803604
+I1206 19:54:31.865327 17301 layer_factory.hpp:77] Creating layer accuracy
+I1206 19:54:31.865331 17301 net.cpp:84] Creating Layer accuracy
+I1206 19:54:31.865334 17301 net.cpp:406] accuracy <- ip_ip_0_split_1
+I1206 19:54:31.865337 17301 net.cpp:406] accuracy <- label_dataset_name_1_split_1
+I1206 19:54:31.865342 17301 net.cpp:380] accuracy -> accuracy
+I1206 19:54:31.865347 17301 net.cpp:122] Setting up accuracy
+I1206 19:54:31.865350 17301 net.cpp:129] Top shape: (1)
+I1206 19:54:31.865353 17301 net.cpp:137] Memory required for data: 27803608
+I1206 19:54:31.865356 17301 net.cpp:200] accuracy does not need backward computation.
+I1206 19:54:31.865376 17301 net.cpp:198] loss needs backward computation.
+I1206 19:54:31.865381 17301 net.cpp:198] ip_ip_0_split needs backward computation.
+I1206 19:54:31.865399 17301 net.cpp:198] ip needs backward computation.
+I1206 19:54:31.865407 17301 net.cpp:198] sigmoid needs backward computation.
+I1206 19:54:31.865411 17301 net.cpp:198] hidden needs backward computation.
+I1206 19:54:31.865413 17301 net.cpp:200] label_dataset_name_1_split does not need backward computation.
+I1206 19:54:31.865417 17301 net.cpp:200] dataset_name does not need backward computation.
+I1206 19:54:31.865419 17301 net.cpp:242] This network produces output accuracy
+I1206 19:54:31.865422 17301 net.cpp:242] This network produces output loss
+I1206 19:54:31.865430 17301 net.cpp:255] Network initialization done.
+I1206 19:54:32.071842 17301 net.cpp:744] Ignoring source layer gender
+I1206 19:54:32.112277 17301 caffe.cpp:290] Running for 50 iterations.
+I1206 19:54:32.178881 17301 caffe.cpp:313] Batch 0, accuracy = 0.88
+I1206 19:54:32.178913 17301 caffe.cpp:313] Batch 0, loss = 0.359221
+I1206 19:54:32.269120 17301 caffe.cpp:313] Batch 1, accuracy = 0.8
+I1206 19:54:32.269352 17301 caffe.cpp:313] Batch 1, loss = 0.485335
+I1206 19:54:32.351599 17301 caffe.cpp:313] Batch 2, accuracy = 0.87
+I1206 19:54:32.351641 17301 caffe.cpp:313] Batch 2, loss = 0.361909
+I1206 19:54:32.435624 17301 caffe.cpp:313] Batch 3, accuracy = 0.9
+I1206 19:54:32.435657 17301 caffe.cpp:313] Batch 3, loss = 0.335529
+I1206 19:54:32.519357 17301 caffe.cpp:313] Batch 4, accuracy = 0.81
+I1206 19:54:32.519390 17301 caffe.cpp:313] Batch 4, loss = 0.3908
+I1206 19:54:32.601423 17301 caffe.cpp:313] Batch 5, accuracy = 0.76
+I1206 19:54:32.601946 17301 caffe.cpp:313] Batch 5, loss = 0.496854
+I1206 19:54:32.676960 17301 caffe.cpp:313] Batch 6, accuracy = 0.83
+I1206 19:54:32.677511 17301 caffe.cpp:313] Batch 6, loss = 0.413223
+I1206 19:54:32.761471 17301 caffe.cpp:313] Batch 7, accuracy = 0.84
+I1206 19:54:32.761972 17301 caffe.cpp:313] Batch 7, loss = 0.478851
+I1206 19:54:32.844966 17301 caffe.cpp:313] Batch 8, accuracy = 0.83
+I1206 19:54:32.845491 17301 caffe.cpp:313] Batch 8, loss = 0.397282
+I1206 19:54:32.929663 17301 caffe.cpp:313] Batch 9, accuracy = 0.79
+I1206 19:54:32.930043 17301 caffe.cpp:313] Batch 9, loss = 0.474357
+I1206 19:54:33.015568 17301 caffe.cpp:313] Batch 10, accuracy = 0.77
+I1206 19:54:33.016077 17301 caffe.cpp:313] Batch 10, loss = 0.47959
+I1206 19:54:33.099648 17301 caffe.cpp:313] Batch 11, accuracy = 0.85
+I1206 19:54:33.099900 17301 caffe.cpp:313] Batch 11, loss = 0.41304
+I1206 19:54:33.183400 17301 caffe.cpp:313] Batch 12, accuracy = 0.85
+I1206 19:54:33.183432 17301 caffe.cpp:313] Batch 12, loss = 0.315102
+I1206 19:54:33.266155 17301 caffe.cpp:313] Batch 13, accuracy = 0.84
+I1206 19:54:33.266187 17301 caffe.cpp:313] Batch 13, loss = 0.369784
+I1206 19:54:33.348695 17301 caffe.cpp:313] Batch 14, accuracy = 0.92
+I1206 19:54:33.348726 17301 caffe.cpp:313] Batch 14, loss = 0.254571
+I1206 19:54:33.426990 17301 caffe.cpp:313] Batch 15, accuracy = 0.9
+I1206 19:54:33.427481 17301 caffe.cpp:313] Batch 15, loss = 0.371862
+I1206 19:54:33.512890 17301 caffe.cpp:313] Batch 16, accuracy = 0.82
+I1206 19:54:33.513386 17301 caffe.cpp:313] Batch 16, loss = 0.407631
+I1206 19:54:33.597854 17301 caffe.cpp:313] Batch 17, accuracy = 0.79
+I1206 19:54:33.598464 17301 caffe.cpp:313] Batch 17, loss = 0.435524
+I1206 19:54:33.680411 17301 caffe.cpp:313] Batch 18, accuracy = 0.87
+I1206 19:54:33.680939 17301 caffe.cpp:313] Batch 18, loss = 0.307442
+I1206 19:54:33.763344 17301 caffe.cpp:313] Batch 19, accuracy = 0.84
+I1206 19:54:33.763860 17301 caffe.cpp:313] Batch 19, loss = 0.408345
+I1206 19:54:33.837435 17301 caffe.cpp:313] Batch 20, accuracy = 0.82
+I1206 19:54:33.837998 17301 caffe.cpp:313] Batch 20, loss = 0.40364
+I1206 19:54:33.908709 17301 caffe.cpp:313] Batch 21, accuracy = 0.89
+I1206 19:54:33.909205 17301 caffe.cpp:313] Batch 21, loss = 0.312061
+I1206 19:54:33.992125 17301 caffe.cpp:313] Batch 22, accuracy = 0.77
+I1206 19:54:33.992722 17301 caffe.cpp:313] Batch 22, loss = 0.440018
+I1206 19:54:34.065017 17301 caffe.cpp:313] Batch 23, accuracy = 0.79
+I1206 19:54:34.065604 17301 caffe.cpp:313] Batch 23, loss = 0.426631
+I1206 19:54:34.151726 17301 caffe.cpp:313] Batch 24, accuracy = 0.79
+I1206 19:54:34.152292 17301 caffe.cpp:313] Batch 24, loss = 0.415056
+I1206 19:54:34.224000 17301 caffe.cpp:313] Batch 25, accuracy = 0.86
+I1206 19:54:34.224509 17301 caffe.cpp:313] Batch 25, loss = 0.334086
+I1206 19:54:34.300623 17301 caffe.cpp:313] Batch 26, accuracy = 0.79
+I1206 19:54:34.301162 17301 caffe.cpp:313] Batch 26, loss = 0.465176
+I1206 19:54:34.384807 17301 caffe.cpp:313] Batch 27, accuracy = 0.91
+I1206 19:54:34.385323 17301 caffe.cpp:313] Batch 27, loss = 0.291963
+I1206 19:54:34.467512 17301 caffe.cpp:313] Batch 28, accuracy = 0.86
+I1206 19:54:34.468050 17301 caffe.cpp:313] Batch 28, loss = 0.366237
+I1206 19:54:34.540863 17301 caffe.cpp:313] Batch 29, accuracy = 0.83
+I1206 19:54:34.541409 17301 caffe.cpp:313] Batch 29, loss = 0.416906
+I1206 19:54:34.626521 17301 caffe.cpp:313] Batch 30, accuracy = 0.85
+I1206 19:54:34.627046 17301 caffe.cpp:313] Batch 30, loss = 0.390749
+I1206 19:54:34.709108 17301 caffe.cpp:313] Batch 31, accuracy = 0.81
+I1206 19:54:34.709631 17301 caffe.cpp:313] Batch 31, loss = 0.496786
+I1206 19:54:34.789563 17301 caffe.cpp:313] Batch 32, accuracy = 0.79
+I1206 19:54:34.790104 17301 caffe.cpp:313] Batch 32, loss = 0.455899
+I1206 19:54:34.873523 17301 caffe.cpp:313] Batch 33, accuracy = 0.81
+I1206 19:54:34.874044 17301 caffe.cpp:313] Batch 33, loss = 0.476338
+I1206 19:54:34.956784 17301 caffe.cpp:313] Batch 34, accuracy = 0.82
+I1206 19:54:34.957299 17301 caffe.cpp:313] Batch 34, loss = 0.431458
+I1206 19:54:35.039818 17301 caffe.cpp:313] Batch 35, accuracy = 0.78
+I1206 19:54:35.040324 17301 caffe.cpp:313] Batch 35, loss = 0.4603
+I1206 19:54:35.123268 17301 caffe.cpp:313] Batch 36, accuracy = 0.85
+I1206 19:54:35.123842 17301 caffe.cpp:313] Batch 36, loss = 0.34899
+I1206 19:54:35.203040 17301 caffe.cpp:313] Batch 37, accuracy = 0.78
+I1206 19:54:35.203562 17301 caffe.cpp:313] Batch 37, loss = 0.446185
+I1206 19:54:35.289003 17301 caffe.cpp:313] Batch 38, accuracy = 0.87
+I1206 19:54:35.289556 17301 caffe.cpp:313] Batch 38, loss = 0.330383
+I1206 19:54:35.372421 17301 caffe.cpp:313] Batch 39, accuracy = 0.88
+I1206 19:54:35.372951 17301 caffe.cpp:313] Batch 39, loss = 0.301107
+I1206 19:54:35.448761 17301 caffe.cpp:313] Batch 40, accuracy = 0.88
+I1206 19:54:35.449308 17301 caffe.cpp:313] Batch 40, loss = 0.342968
+I1206 19:54:35.532951 17301 caffe.cpp:313] Batch 41, accuracy = 0.83
+I1206 19:54:35.533473 17301 caffe.cpp:313] Batch 41, loss = 0.473175
+I1206 19:54:35.617300 17301 caffe.cpp:313] Batch 42, accuracy = 0.84
+I1206 19:54:35.617817 17301 caffe.cpp:313] Batch 42, loss = 0.437116
+I1206 19:54:35.693732 17301 caffe.cpp:313] Batch 43, accuracy = 0.86
+I1206 19:54:35.694265 17301 caffe.cpp:313] Batch 43, loss = 0.347414
+I1206 19:54:35.776739 17301 caffe.cpp:313] Batch 44, accuracy = 0.85
+I1206 19:54:35.777247 17301 caffe.cpp:313] Batch 44, loss = 0.410589
+I1206 19:54:35.861177 17301 caffe.cpp:313] Batch 45, accuracy = 0.77
+I1206 19:54:35.861687 17301 caffe.cpp:313] Batch 45, loss = 0.512405
+I1206 19:54:35.940493 17301 caffe.cpp:313] Batch 46, accuracy = 0.85
+I1206 19:54:35.941025 17301 caffe.cpp:313] Batch 46, loss = 0.427984
+I1206 19:54:36.023198 17301 caffe.cpp:313] Batch 47, accuracy = 0.88
+I1206 19:54:36.023715 17301 caffe.cpp:313] Batch 47, loss = 0.306566
+I1206 19:54:36.102413 17301 caffe.cpp:313] Batch 48, accuracy = 0.81
+I1206 19:54:36.102449 17301 caffe.cpp:313] Batch 48, loss = 0.435819
+I1206 19:54:36.185988 17301 caffe.cpp:313] Batch 49, accuracy = 0.81
+I1206 19:54:36.186543 17301 caffe.cpp:313] Batch 49, loss = 0.460116
+I1206 19:54:36.186975 17301 caffe.cpp:318] Loss: 0.402407
+I1206 19:54:36.186991 17301 caffe.cpp:330] accuracy = 0.8338
+I1206 19:54:36.187001 17301 caffe.cpp:330] loss = 0.402407 (* 1 = 0.402407 loss)

@@ -1,0 +1,780 @@
+Train FCN
+I1206 19:56:53.154047 17709 caffe.cpp:218] Using GPUs 0
+I1206 19:56:53.190701 17709 caffe.cpp:223] GPU 0: GeForce GTX 1080
+I1206 19:56:53.379568 17709 solver.cpp:44] Initializing solver from parameters: 
+test_iter: 120
+test_interval: 1000
+base_lr: 0.05
+display: 0
+max_iter: 10000
+lr_policy: "step"
+gamma: 0.1
+momentum: 0.9
+weight_decay: 0.0005
+stepsize: 2500
+snapshot: 500
+snapshot_prefix: "/home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn"
+solver_mode: GPU
+device_id: 0
+net: "/home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn.prototxt"
+train_state {
+  level: 0
+  stage: ""
+}
+type: "SGD"
+I1206 19:56:53.379755 17709 solver.cpp:87] Creating training net from net file: /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn.prototxt
+I1206 19:56:53.379894 17709 net.cpp:294] The NetState phase (0) differed from the phase (1) specified by a rule in layer dataset_name
+I1206 19:56:53.379904 17709 net.cpp:294] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy
+I1206 19:56:53.379943 17709 net.cpp:51] Initializing net from parameters: 
+name: "SimpleFCN"
+state {
+  phase: TRAIN
+  level: 0
+  stage: ""
+}
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "/home/glebg/dev/deep-learning/train.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+  }
+}
+layer {
+  name: "hidden1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden1"
+  inner_product_param {
+    num_output: 400
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "elu"
+  type: "ELU"
+  bottom: "hidden1"
+  top: "elu"
+}
+layer {
+  name: "hidden2"
+  type: "InnerProduct"
+  bottom: "elu"
+  top: "hidden2"
+  inner_product_param {
+    num_output: 50
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "tanh"
+  type: "TanH"
+  bottom: "hidden2"
+  top: "tanh"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "tanh"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+I1206 19:56:53.379999 17709 layer_factory.hpp:77] Creating layer gender
+I1206 19:56:53.380035 17709 net.cpp:84] Creating Layer gender
+I1206 19:56:53.380040 17709 net.cpp:380] gender -> data
+I1206 19:56:53.380055 17709 net.cpp:380] gender -> label
+I1206 19:56:53.380128 17709 image_data_layer.cpp:38] Opening file /home/glebg/dev/deep-learning/train.lst
+I1206 19:56:53.395018 17709 image_data_layer.cpp:63] A total of 47000 images.
+I1206 19:56:53.476194 17709 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 19:56:53.511198 17709 net.cpp:122] Setting up gender
+I1206 19:56:53.511234 17709 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 19:56:53.511237 17709 net.cpp:129] Top shape: 100 (100)
+I1206 19:56:53.511240 17709 net.cpp:137] Memory required for data: 27000400
+I1206 19:56:53.511245 17709 layer_factory.hpp:77] Creating layer hidden1
+I1206 19:56:53.511274 17709 net.cpp:84] Creating Layer hidden1
+I1206 19:56:53.511278 17709 net.cpp:406] hidden1 <- data
+I1206 19:56:53.511286 17709 net.cpp:380] hidden1 -> hidden1
+I1206 19:56:53.669832 17709 net.cpp:122] Setting up hidden1
+I1206 19:56:53.669864 17709 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:56:53.669869 17709 net.cpp:137] Memory required for data: 27160400
+I1206 19:56:53.669888 17709 layer_factory.hpp:77] Creating layer elu
+I1206 19:56:53.669910 17709 net.cpp:84] Creating Layer elu
+I1206 19:56:53.669914 17709 net.cpp:406] elu <- hidden1
+I1206 19:56:53.669917 17709 net.cpp:380] elu -> elu
+I1206 19:56:53.669935 17709 net.cpp:122] Setting up elu
+I1206 19:56:53.669955 17709 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:56:53.669965 17709 net.cpp:137] Memory required for data: 27320400
+I1206 19:56:53.669972 17709 layer_factory.hpp:77] Creating layer hidden2
+I1206 19:56:53.669988 17709 net.cpp:84] Creating Layer hidden2
+I1206 19:56:53.670009 17709 net.cpp:406] hidden2 <- elu
+I1206 19:56:53.670020 17709 net.cpp:380] hidden2 -> hidden2
+I1206 19:56:53.670925 17709 net.cpp:122] Setting up hidden2
+I1206 19:56:53.670938 17709 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:56:53.670939 17709 net.cpp:137] Memory required for data: 27340400
+I1206 19:56:53.670948 17709 layer_factory.hpp:77] Creating layer tanh
+I1206 19:56:53.670954 17709 net.cpp:84] Creating Layer tanh
+I1206 19:56:53.670969 17709 net.cpp:406] tanh <- hidden2
+I1206 19:56:53.670979 17709 net.cpp:380] tanh -> tanh
+I1206 19:56:53.671005 17709 net.cpp:122] Setting up tanh
+I1206 19:56:53.671011 17709 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:56:53.671012 17709 net.cpp:137] Memory required for data: 27360400
+I1206 19:56:53.671015 17709 layer_factory.hpp:77] Creating layer ip
+I1206 19:56:53.671020 17709 net.cpp:84] Creating Layer ip
+I1206 19:56:53.671021 17709 net.cpp:406] ip <- tanh
+I1206 19:56:53.671025 17709 net.cpp:380] ip -> ip
+I1206 19:56:53.671082 17709 net.cpp:122] Setting up ip
+I1206 19:56:53.671087 17709 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:56:53.671088 17709 net.cpp:137] Memory required for data: 27361200
+I1206 19:56:53.671093 17709 layer_factory.hpp:77] Creating layer loss
+I1206 19:56:53.671097 17709 net.cpp:84] Creating Layer loss
+I1206 19:56:53.671100 17709 net.cpp:406] loss <- ip
+I1206 19:56:53.671103 17709 net.cpp:406] loss <- label
+I1206 19:56:53.671106 17709 net.cpp:380] loss -> loss
+I1206 19:56:53.671114 17709 layer_factory.hpp:77] Creating layer loss
+I1206 19:56:53.671169 17709 net.cpp:122] Setting up loss
+I1206 19:56:53.671182 17709 net.cpp:129] Top shape: (1)
+I1206 19:56:53.671190 17709 net.cpp:132]     with loss weight 1
+I1206 19:56:53.671202 17709 net.cpp:137] Memory required for data: 27361204
+I1206 19:56:53.671205 17709 net.cpp:198] loss needs backward computation.
+I1206 19:56:53.671210 17709 net.cpp:198] ip needs backward computation.
+I1206 19:56:53.671211 17709 net.cpp:198] tanh needs backward computation.
+I1206 19:56:53.671214 17709 net.cpp:198] hidden2 needs backward computation.
+I1206 19:56:53.671216 17709 net.cpp:198] elu needs backward computation.
+I1206 19:56:53.671218 17709 net.cpp:198] hidden1 needs backward computation.
+I1206 19:56:53.671221 17709 net.cpp:200] gender does not need backward computation.
+I1206 19:56:53.671222 17709 net.cpp:242] This network produces output loss
+I1206 19:56:53.671228 17709 net.cpp:255] Network initialization done.
+I1206 19:56:53.671317 17709 solver.cpp:172] Creating test net (#0) specified by net file: /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn.prototxt
+I1206 19:56:53.671329 17709 net.cpp:294] The NetState phase (1) differed from the phase (0) specified by a rule in layer gender
+I1206 19:56:53.671385 17709 net.cpp:51] Initializing net from parameters: 
+name: "SimpleFCN"
+state {
+  phase: TEST
+}
+layer {
+  name: "dataset_name"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "/home/glebg/dev/deep-learning/test.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+  }
+}
+layer {
+  name: "hidden1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden1"
+  inner_product_param {
+    num_output: 400
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "elu"
+  type: "ELU"
+  bottom: "hidden1"
+  top: "elu"
+}
+layer {
+  name: "hidden2"
+  type: "InnerProduct"
+  bottom: "elu"
+  top: "hidden2"
+  inner_product_param {
+    num_output: 50
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "tanh"
+  type: "TanH"
+  bottom: "hidden2"
+  top: "tanh"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "tanh"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+I1206 19:56:53.671442 17709 layer_factory.hpp:77] Creating layer dataset_name
+I1206 19:56:53.671450 17709 net.cpp:84] Creating Layer dataset_name
+I1206 19:56:53.671454 17709 net.cpp:380] dataset_name -> data
+I1206 19:56:53.671459 17709 net.cpp:380] dataset_name -> label
+I1206 19:56:53.671464 17709 image_data_layer.cpp:38] Opening file /home/glebg/dev/deep-learning/test.lst
+I1206 19:56:53.674737 17709 image_data_layer.cpp:63] A total of 12000 images.
+I1206 19:56:53.675151 17709 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 19:56:53.711313 17709 net.cpp:122] Setting up dataset_name
+I1206 19:56:53.711330 17709 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 19:56:53.711357 17709 net.cpp:129] Top shape: 100 (100)
+I1206 19:56:53.711359 17709 net.cpp:137] Memory required for data: 27000400
+I1206 19:56:53.711364 17709 layer_factory.hpp:77] Creating layer label_dataset_name_1_split
+I1206 19:56:53.711374 17709 net.cpp:84] Creating Layer label_dataset_name_1_split
+I1206 19:56:53.711391 17709 net.cpp:406] label_dataset_name_1_split <- label
+I1206 19:56:53.711396 17709 net.cpp:380] label_dataset_name_1_split -> label_dataset_name_1_split_0
+I1206 19:56:53.711402 17709 net.cpp:380] label_dataset_name_1_split -> label_dataset_name_1_split_1
+I1206 19:56:53.711771 17709 net.cpp:122] Setting up label_dataset_name_1_split
+I1206 19:56:53.711805 17709 net.cpp:129] Top shape: 100 (100)
+I1206 19:56:53.711808 17709 net.cpp:129] Top shape: 100 (100)
+I1206 19:56:53.711810 17709 net.cpp:137] Memory required for data: 27001200
+I1206 19:56:53.711812 17709 layer_factory.hpp:77] Creating layer hidden1
+I1206 19:56:53.711819 17709 net.cpp:84] Creating Layer hidden1
+I1206 19:56:53.711822 17709 net.cpp:406] hidden1 <- data
+I1206 19:56:53.711825 17709 net.cpp:380] hidden1 -> hidden1
+I1206 19:56:53.837474 17709 net.cpp:122] Setting up hidden1
+I1206 19:56:53.837513 17709 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:56:53.837517 17709 net.cpp:137] Memory required for data: 27161200
+I1206 19:56:53.837527 17709 layer_factory.hpp:77] Creating layer elu
+I1206 19:56:53.837532 17709 net.cpp:84] Creating Layer elu
+I1206 19:56:53.837551 17709 net.cpp:406] elu <- hidden1
+I1206 19:56:53.837556 17709 net.cpp:380] elu -> elu
+I1206 19:56:53.837577 17709 net.cpp:122] Setting up elu
+I1206 19:56:53.837597 17709 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:56:53.837606 17709 net.cpp:137] Memory required for data: 27321200
+I1206 19:56:53.837615 17709 layer_factory.hpp:77] Creating layer hidden2
+I1206 19:56:53.837625 17709 net.cpp:84] Creating Layer hidden2
+I1206 19:56:53.837635 17709 net.cpp:406] hidden2 <- elu
+I1206 19:56:53.837644 17709 net.cpp:380] hidden2 -> hidden2
+I1206 19:56:53.837859 17709 net.cpp:122] Setting up hidden2
+I1206 19:56:53.837882 17709 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:56:53.837883 17709 net.cpp:137] Memory required for data: 27341200
+I1206 19:56:53.837888 17709 layer_factory.hpp:77] Creating layer tanh
+I1206 19:56:53.837893 17709 net.cpp:84] Creating Layer tanh
+I1206 19:56:53.837895 17709 net.cpp:406] tanh <- hidden2
+I1206 19:56:53.837898 17709 net.cpp:380] tanh -> tanh
+I1206 19:56:53.837913 17709 net.cpp:122] Setting up tanh
+I1206 19:56:53.837924 17709 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:56:53.837932 17709 net.cpp:137] Memory required for data: 27361200
+I1206 19:56:53.837940 17709 layer_factory.hpp:77] Creating layer ip
+I1206 19:56:53.837949 17709 net.cpp:84] Creating Layer ip
+I1206 19:56:53.837960 17709 net.cpp:406] ip <- tanh
+I1206 19:56:53.837968 17709 net.cpp:380] ip -> ip
+I1206 19:56:53.838035 17709 net.cpp:122] Setting up ip
+I1206 19:56:53.838042 17709 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:56:53.838043 17709 net.cpp:137] Memory required for data: 27362000
+I1206 19:56:53.838048 17709 layer_factory.hpp:77] Creating layer ip_ip_0_split
+I1206 19:56:53.838052 17709 net.cpp:84] Creating Layer ip_ip_0_split
+I1206 19:56:53.838053 17709 net.cpp:406] ip_ip_0_split <- ip
+I1206 19:56:53.838069 17709 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_0
+I1206 19:56:53.838074 17709 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_1
+I1206 19:56:53.838094 17709 net.cpp:122] Setting up ip_ip_0_split
+I1206 19:56:53.838098 17709 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:56:53.838100 17709 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:56:53.838101 17709 net.cpp:137] Memory required for data: 27363600
+I1206 19:56:53.838104 17709 layer_factory.hpp:77] Creating layer loss
+I1206 19:56:53.838107 17709 net.cpp:84] Creating Layer loss
+I1206 19:56:53.838119 17709 net.cpp:406] loss <- ip_ip_0_split_0
+I1206 19:56:53.838129 17709 net.cpp:406] loss <- label_dataset_name_1_split_0
+I1206 19:56:53.838137 17709 net.cpp:380] loss -> loss
+I1206 19:56:53.838148 17709 layer_factory.hpp:77] Creating layer loss
+I1206 19:56:53.838210 17709 net.cpp:122] Setting up loss
+I1206 19:56:53.838215 17709 net.cpp:129] Top shape: (1)
+I1206 19:56:53.838217 17709 net.cpp:132]     with loss weight 1
+I1206 19:56:53.838232 17709 net.cpp:137] Memory required for data: 27363604
+I1206 19:56:53.838235 17709 layer_factory.hpp:77] Creating layer accuracy
+I1206 19:56:53.838238 17709 net.cpp:84] Creating Layer accuracy
+I1206 19:56:53.838240 17709 net.cpp:406] accuracy <- ip_ip_0_split_1
+I1206 19:56:53.838246 17709 net.cpp:406] accuracy <- label_dataset_name_1_split_1
+I1206 19:56:53.838250 17709 net.cpp:380] accuracy -> accuracy
+I1206 19:56:53.838256 17709 net.cpp:122] Setting up accuracy
+I1206 19:56:53.838258 17709 net.cpp:129] Top shape: (1)
+I1206 19:56:53.838260 17709 net.cpp:137] Memory required for data: 27363608
+I1206 19:56:53.838263 17709 net.cpp:200] accuracy does not need backward computation.
+I1206 19:56:53.838265 17709 net.cpp:198] loss needs backward computation.
+I1206 19:56:53.838268 17709 net.cpp:198] ip_ip_0_split needs backward computation.
+I1206 19:56:53.838269 17709 net.cpp:198] ip needs backward computation.
+I1206 19:56:53.838273 17709 net.cpp:198] tanh needs backward computation.
+I1206 19:56:53.838274 17709 net.cpp:198] hidden2 needs backward computation.
+I1206 19:56:53.838276 17709 net.cpp:198] elu needs backward computation.
+I1206 19:56:53.838279 17709 net.cpp:198] hidden1 needs backward computation.
+I1206 19:56:53.838284 17709 net.cpp:200] label_dataset_name_1_split does not need backward computation.
+I1206 19:56:53.838286 17709 net.cpp:200] dataset_name does not need backward computation.
+I1206 19:56:53.838287 17709 net.cpp:242] This network produces output accuracy
+I1206 19:56:53.838289 17709 net.cpp:242] This network produces output loss
+I1206 19:56:53.838297 17709 net.cpp:255] Network initialization done.
+I1206 19:56:53.838320 17709 solver.cpp:56] Solver scaffolding done.
+I1206 19:56:53.838446 17709 caffe.cpp:248] Starting Optimization
+I1206 19:56:53.838450 17709 solver.cpp:272] Solving SimpleFCN
+I1206 19:56:53.838452 17709 solver.cpp:273] Learning Rate Policy: step
+I1206 19:56:53.839545 17709 solver.cpp:330] Iteration 0, Testing net (#0)
+I1206 19:56:53.839555 17709 net.cpp:676] Ignoring source layer gender
+I1206 19:56:53.874483 17709 blocking_queue.cpp:49] Waiting for data
+I1206 19:56:58.796478 17709 solver.cpp:397]     Test net output #0: accuracy = 0.473667
+I1206 19:56:58.796514 17709 solver.cpp:397]     Test net output #1: loss = 0.693931 (* 1 = 0.693931 loss)
+I1206 19:57:20.045810 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_500.caffemodel
+I1206 19:57:20.697494 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_500.solverstate
+I1206 19:57:37.281620 17709 blocking_queue.cpp:49] Waiting for data
+I1206 19:57:41.868381 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_1000.caffemodel
+I1206 19:57:42.528900 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_1000.solverstate
+I1206 19:57:42.653483 17709 solver.cpp:330] Iteration 1000, Testing net (#0)
+I1206 19:57:42.653501 17709 net.cpp:676] Ignoring source layer gender
+I1206 19:57:47.538969 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 19:57:47.539006 17709 solver.cpp:397]     Test net output #1: loss = 0.554227 (* 1 = 0.554227 loss)
+I1206 19:58:08.484014 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_1500.caffemodel
+I1206 19:58:09.182528 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_1500.solverstate
+I1206 19:58:20.757688 17709 blocking_queue.cpp:49] Waiting for data
+I1206 19:58:29.933902 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_2000.caffemodel
+I1206 19:58:31.131000 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_2000.solverstate
+I1206 19:58:31.254636 17709 solver.cpp:330] Iteration 2000, Testing net (#0)
+I1206 19:58:31.254653 17709 net.cpp:676] Ignoring source layer gender
+I1206 19:58:36.116811 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 19:58:36.116847 17709 solver.cpp:397]     Test net output #1: loss = 0.549481 (* 1 = 0.549481 loss)
+I1206 19:58:56.753860 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_2500.caffemodel
+I1206 19:58:57.635886 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_2500.solverstate
+I1206 19:59:04.615247 17709 blocking_queue.cpp:49] Waiting for data
+I1206 19:59:18.361907 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_3000.caffemodel
+I1206 19:59:19.036391 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_3000.solverstate
+I1206 19:59:19.160862 17709 solver.cpp:330] Iteration 3000, Testing net (#0)
+I1206 19:59:19.160881 17709 net.cpp:676] Ignoring source layer gender
+I1206 19:59:24.021464 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 19:59:24.021500 17709 solver.cpp:397]     Test net output #1: loss = 0.5168 (* 1 = 0.5168 loss)
+I1206 19:59:44.665654 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_3500.caffemodel
+I1206 19:59:45.388928 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_3500.solverstate
+I1206 19:59:47.782997 17709 blocking_queue.cpp:49] Waiting for data
+I1206 20:00:06.150568 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_4000.caffemodel
+I1206 20:00:06.875382 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_4000.solverstate
+I1206 20:00:06.998853 17709 solver.cpp:330] Iteration 4000, Testing net (#0)
+I1206 20:00:06.998869 17709 net.cpp:676] Ignoring source layer gender
+I1206 20:00:11.849261 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 20:00:11.849297 17709 solver.cpp:397]     Test net output #1: loss = 0.520357 (* 1 = 0.520357 loss)
+I1206 20:00:30.504245 17709 blocking_queue.cpp:49] Waiting for data
+I1206 20:00:32.895761 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_4500.caffemodel
+I1206 20:00:33.611290 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_4500.solverstate
+I1206 20:00:54.407097 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_5000.caffemodel
+I1206 20:00:55.199514 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_5000.solverstate
+I1206 20:00:55.323163 17709 solver.cpp:330] Iteration 5000, Testing net (#0)
+I1206 20:00:55.323180 17709 net.cpp:676] Ignoring source layer gender
+I1206 20:01:00.190906 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 20:01:00.190942 17709 solver.cpp:397]     Test net output #1: loss = 0.520383 (* 1 = 0.520383 loss)
+I1206 20:01:13.890771 17709 blocking_queue.cpp:49] Waiting for data
+I1206 20:01:20.876742 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_5500.caffemodel
+I1206 20:01:21.820896 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_5500.solverstate
+I1206 20:01:42.626070 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_6000.caffemodel
+I1206 20:01:43.534096 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_6000.solverstate
+I1206 20:01:43.657358 17709 solver.cpp:330] Iteration 6000, Testing net (#0)
+I1206 20:01:43.657379 17709 net.cpp:676] Ignoring source layer gender
+I1206 20:01:48.530992 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 20:01:48.531085 17709 solver.cpp:397]     Test net output #1: loss = 0.515426 (* 1 = 0.515426 loss)
+I1206 20:01:57.591292 17709 blocking_queue.cpp:49] Waiting for data
+I1206 20:02:09.185165 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_6500.caffemodel
+I1206 20:02:09.903849 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_6500.solverstate
+I1206 20:02:30.685292 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_7000.caffemodel
+I1206 20:02:31.453461 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_7000.solverstate
+I1206 20:02:31.576637 17709 solver.cpp:330] Iteration 7000, Testing net (#0)
+I1206 20:02:31.576655 17709 net.cpp:676] Ignoring source layer gender
+I1206 20:02:36.413121 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 20:02:36.413158 17709 solver.cpp:397]     Test net output #1: loss = 0.515321 (* 1 = 0.515321 loss)
+I1206 20:02:40.877935 17709 blocking_queue.cpp:49] Waiting for data
+I1206 20:02:57.120875 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_7500.caffemodel
+I1206 20:02:57.976387 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_7500.solverstate
+I1206 20:03:18.786236 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_8000.caffemodel
+I1206 20:03:19.630393 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_8000.solverstate
+I1206 20:03:19.752585 17709 solver.cpp:330] Iteration 8000, Testing net (#0)
+I1206 20:03:19.752602 17709 net.cpp:676] Ignoring source layer gender
+I1206 20:03:24.456666 17709 blocking_queue.cpp:49] Waiting for data
+I1206 20:03:24.626346 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 20:03:24.626382 17709 solver.cpp:397]     Test net output #1: loss = 0.515422 (* 1 = 0.515422 loss)
+I1206 20:03:45.347828 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_8500.caffemodel
+I1206 20:03:46.134937 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_8500.solverstate
+I1206 20:04:06.931080 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_9000.caffemodel
+I1206 20:04:07.562748 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_9000.solverstate
+I1206 20:04:07.684514 17709 solver.cpp:330] Iteration 9000, Testing net (#0)
+I1206 20:04:07.684530 17709 net.cpp:676] Ignoring source layer gender
+I1206 20:04:07.779119 17709 blocking_queue.cpp:49] Waiting for data
+I1206 20:04:12.542829 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 20:04:12.542850 17709 solver.cpp:397]     Test net output #1: loss = 0.515349 (* 1 = 0.515349 loss)
+I1206 20:04:33.203796 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_9500.caffemodel
+I1206 20:04:34.065500 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_9500.solverstate
+I1206 20:04:50.378315 17709 blocking_queue.cpp:49] Waiting for data
+I1206 20:04:54.901787 17709 solver.cpp:447] Snapshotting to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_10000.caffemodel
+I1206 20:04:55.783605 17709 sgd_solver.cpp:273] Snapshotting solver state to binary proto file /home/glebg/dev/deep-learning/lab1/exp_2_elu_tanh/gender_fcn/gender_fcn_iter_10000.solverstate
+I1206 20:04:55.906822 17709 solver.cpp:330] Iteration 10000, Testing net (#0)
+I1206 20:04:55.906841 17709 net.cpp:676] Ignoring source layer gender
+I1206 20:05:00.748047 17709 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 20:05:00.748083 17709 solver.cpp:397]     Test net output #1: loss = 0.515448 (* 1 = 0.515448 loss)
+I1206 20:05:00.748088 17709 solver.cpp:315] Optimization Done.
+I1206 20:05:00.748090 17709 caffe.cpp:259] Optimization Done.
+Test FCN
+I1206 20:05:01.072402 17946 caffe.cpp:284] Use CPU.
+I1206 20:05:01.310348 17946 net.cpp:294] The NetState phase (1) differed from the phase (0) specified by a rule in layer gender
+I1206 20:05:01.310500 17946 net.cpp:51] Initializing net from parameters: 
+name: "SimpleFCN"
+state {
+  phase: TEST
+  level: 0
+  stage: ""
+}
+layer {
+  name: "dataset_name"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "/home/glebg/dev/deep-learning/test.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+  }
+}
+layer {
+  name: "hidden1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden1"
+  inner_product_param {
+    num_output: 400
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "elu"
+  type: "ELU"
+  bottom: "hidden1"
+  top: "elu"
+}
+layer {
+  name: "hidden2"
+  type: "InnerProduct"
+  bottom: "elu"
+  top: "hidden2"
+  inner_product_param {
+    num_output: 50
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "tanh"
+  type: "TanH"
+  bottom: "hidden2"
+  top: "tanh"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "tanh"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+I1206 20:05:01.310595 17946 layer_factory.hpp:77] Creating layer dataset_name
+I1206 20:05:01.310616 17946 net.cpp:84] Creating Layer dataset_name
+I1206 20:05:01.310622 17946 net.cpp:380] dataset_name -> data
+I1206 20:05:01.310637 17946 net.cpp:380] dataset_name -> label
+I1206 20:05:01.310652 17946 image_data_layer.cpp:38] Opening file /home/glebg/dev/deep-learning/test.lst
+I1206 20:05:01.314476 17946 image_data_layer.cpp:63] A total of 12000 images.
+I1206 20:05:01.469413 17946 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 20:05:01.501530 17946 net.cpp:122] Setting up dataset_name
+I1206 20:05:01.501560 17946 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 20:05:01.501569 17946 net.cpp:129] Top shape: 100 (100)
+I1206 20:05:01.501574 17946 net.cpp:137] Memory required for data: 27000400
+I1206 20:05:01.501581 17946 layer_factory.hpp:77] Creating layer label_dataset_name_1_split
+I1206 20:05:01.501596 17946 net.cpp:84] Creating Layer label_dataset_name_1_split
+I1206 20:05:01.501603 17946 net.cpp:406] label_dataset_name_1_split <- label
+I1206 20:05:01.501618 17946 net.cpp:380] label_dataset_name_1_split -> label_dataset_name_1_split_0
+I1206 20:05:01.501632 17946 net.cpp:380] label_dataset_name_1_split -> label_dataset_name_1_split_1
+I1206 20:05:01.501654 17946 net.cpp:122] Setting up label_dataset_name_1_split
+I1206 20:05:01.501662 17946 net.cpp:129] Top shape: 100 (100)
+I1206 20:05:01.501668 17946 net.cpp:129] Top shape: 100 (100)
+I1206 20:05:01.501672 17946 net.cpp:137] Memory required for data: 27001200
+I1206 20:05:01.501677 17946 layer_factory.hpp:77] Creating layer hidden1
+I1206 20:05:01.501698 17946 net.cpp:84] Creating Layer hidden1
+I1206 20:05:01.501704 17946 net.cpp:406] hidden1 <- data
+I1206 20:05:01.501713 17946 net.cpp:380] hidden1 -> hidden1
+I1206 20:05:01.680086 17946 net.cpp:122] Setting up hidden1
+I1206 20:05:01.680116 17946 net.cpp:129] Top shape: 100 400 (40000)
+I1206 20:05:01.680119 17946 net.cpp:137] Memory required for data: 27161200
+I1206 20:05:01.680135 17946 layer_factory.hpp:77] Creating layer elu
+I1206 20:05:01.680157 17946 net.cpp:84] Creating Layer elu
+I1206 20:05:01.680160 17946 net.cpp:406] elu <- hidden1
+I1206 20:05:01.680182 17946 net.cpp:380] elu -> elu
+I1206 20:05:01.680188 17946 net.cpp:122] Setting up elu
+I1206 20:05:01.680236 17946 net.cpp:129] Top shape: 100 400 (40000)
+I1206 20:05:01.680245 17946 net.cpp:137] Memory required for data: 27321200
+I1206 20:05:01.680249 17946 layer_factory.hpp:77] Creating layer hidden2
+I1206 20:05:01.680285 17946 net.cpp:84] Creating Layer hidden2
+I1206 20:05:01.680307 17946 net.cpp:406] hidden2 <- elu
+I1206 20:05:01.680311 17946 net.cpp:380] hidden2 -> hidden2
+I1206 20:05:01.680402 17946 net.cpp:122] Setting up hidden2
+I1206 20:05:01.680407 17946 net.cpp:129] Top shape: 100 50 (5000)
+I1206 20:05:01.680408 17946 net.cpp:137] Memory required for data: 27341200
+I1206 20:05:01.680413 17946 layer_factory.hpp:77] Creating layer tanh
+I1206 20:05:01.680418 17946 net.cpp:84] Creating Layer tanh
+I1206 20:05:01.680419 17946 net.cpp:406] tanh <- hidden2
+I1206 20:05:01.680423 17946 net.cpp:380] tanh -> tanh
+I1206 20:05:01.680426 17946 net.cpp:122] Setting up tanh
+I1206 20:05:01.680428 17946 net.cpp:129] Top shape: 100 50 (5000)
+I1206 20:05:01.680430 17946 net.cpp:137] Memory required for data: 27361200
+I1206 20:05:01.680433 17946 layer_factory.hpp:77] Creating layer ip
+I1206 20:05:01.680435 17946 net.cpp:84] Creating Layer ip
+I1206 20:05:01.680438 17946 net.cpp:406] ip <- tanh
+I1206 20:05:01.680441 17946 net.cpp:380] ip -> ip
+I1206 20:05:01.680449 17946 net.cpp:122] Setting up ip
+I1206 20:05:01.680452 17946 net.cpp:129] Top shape: 100 2 (200)
+I1206 20:05:01.680454 17946 net.cpp:137] Memory required for data: 27362000
+I1206 20:05:01.680459 17946 layer_factory.hpp:77] Creating layer ip_ip_0_split
+I1206 20:05:01.680461 17946 net.cpp:84] Creating Layer ip_ip_0_split
+I1206 20:05:01.680464 17946 net.cpp:406] ip_ip_0_split <- ip
+I1206 20:05:01.680466 17946 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_0
+I1206 20:05:01.680470 17946 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_1
+I1206 20:05:01.680474 17946 net.cpp:122] Setting up ip_ip_0_split
+I1206 20:05:01.680476 17946 net.cpp:129] Top shape: 100 2 (200)
+I1206 20:05:01.680480 17946 net.cpp:129] Top shape: 100 2 (200)
+I1206 20:05:01.680482 17946 net.cpp:137] Memory required for data: 27363600
+I1206 20:05:01.680485 17946 layer_factory.hpp:77] Creating layer loss
+I1206 20:05:01.680488 17946 net.cpp:84] Creating Layer loss
+I1206 20:05:01.680490 17946 net.cpp:406] loss <- ip_ip_0_split_0
+I1206 20:05:01.680493 17946 net.cpp:406] loss <- label_dataset_name_1_split_0
+I1206 20:05:01.680496 17946 net.cpp:380] loss -> loss
+I1206 20:05:01.680503 17946 layer_factory.hpp:77] Creating layer loss
+I1206 20:05:01.680512 17946 net.cpp:122] Setting up loss
+I1206 20:05:01.680516 17946 net.cpp:129] Top shape: (1)
+I1206 20:05:01.680516 17946 net.cpp:132]     with loss weight 1
+I1206 20:05:01.680527 17946 net.cpp:137] Memory required for data: 27363604
+I1206 20:05:01.680529 17946 layer_factory.hpp:77] Creating layer accuracy
+I1206 20:05:01.680533 17946 net.cpp:84] Creating Layer accuracy
+I1206 20:05:01.680536 17946 net.cpp:406] accuracy <- ip_ip_0_split_1
+I1206 20:05:01.680538 17946 net.cpp:406] accuracy <- label_dataset_name_1_split_1
+I1206 20:05:01.680541 17946 net.cpp:380] accuracy -> accuracy
+I1206 20:05:01.680546 17946 net.cpp:122] Setting up accuracy
+I1206 20:05:01.680548 17946 net.cpp:129] Top shape: (1)
+I1206 20:05:01.680550 17946 net.cpp:137] Memory required for data: 27363608
+I1206 20:05:01.680552 17946 net.cpp:200] accuracy does not need backward computation.
+I1206 20:05:01.680557 17946 net.cpp:198] loss needs backward computation.
+I1206 20:05:01.680559 17946 net.cpp:198] ip_ip_0_split needs backward computation.
+I1206 20:05:01.680562 17946 net.cpp:198] ip needs backward computation.
+I1206 20:05:01.680563 17946 net.cpp:198] tanh needs backward computation.
+I1206 20:05:01.680565 17946 net.cpp:198] hidden2 needs backward computation.
+I1206 20:05:01.680567 17946 net.cpp:198] elu needs backward computation.
+I1206 20:05:01.680569 17946 net.cpp:198] hidden1 needs backward computation.
+I1206 20:05:01.680572 17946 net.cpp:200] label_dataset_name_1_split does not need backward computation.
+I1206 20:05:01.680574 17946 net.cpp:200] dataset_name does not need backward computation.
+I1206 20:05:01.680577 17946 net.cpp:242] This network produces output accuracy
+I1206 20:05:01.680578 17946 net.cpp:242] This network produces output loss
+I1206 20:05:01.680586 17946 net.cpp:255] Network initialization done.
+I1206 20:05:01.739367 17946 net.cpp:744] Ignoring source layer gender
+I1206 20:05:01.754065 17946 caffe.cpp:290] Running for 50 iterations.
+I1206 20:05:01.791477 17946 caffe.cpp:313] Batch 0, accuracy = 0.83
+I1206 20:05:01.791533 17946 caffe.cpp:313] Batch 0, loss = 0.460392
+I1206 20:05:01.846375 17946 caffe.cpp:313] Batch 1, accuracy = 0.73
+I1206 20:05:01.846415 17946 caffe.cpp:313] Batch 1, loss = 0.595225
+I1206 20:05:01.881258 17946 caffe.cpp:313] Batch 2, accuracy = 0.84
+I1206 20:05:01.881311 17946 caffe.cpp:313] Batch 2, loss = 0.436103
+I1206 20:05:01.913278 17946 caffe.cpp:313] Batch 3, accuracy = 0.77
+I1206 20:05:01.914263 17946 caffe.cpp:313] Batch 3, loss = 0.523739
+I1206 20:05:01.952033 17946 caffe.cpp:313] Batch 4, accuracy = 0.73
+I1206 20:05:01.952076 17946 caffe.cpp:313] Batch 4, loss = 0.579818
+I1206 20:05:01.985939 17946 caffe.cpp:313] Batch 5, accuracy = 0.68
+I1206 20:05:01.987529 17946 caffe.cpp:313] Batch 5, loss = 0.63778
+I1206 20:05:01.987553 17946 blocking_queue.cpp:49] Waiting for data
+I1206 20:05:02.038918 17946 caffe.cpp:313] Batch 6, accuracy = 0.8
+I1206 20:05:02.038966 17946 caffe.cpp:313] Batch 6, loss = 0.485224
+I1206 20:05:02.074266 17946 caffe.cpp:313] Batch 7, accuracy = 0.76
+I1206 20:05:02.082976 17946 caffe.cpp:313] Batch 7, loss = 0.536076
+I1206 20:05:02.132196 17946 caffe.cpp:313] Batch 8, accuracy = 0.76
+I1206 20:05:02.138262 17946 caffe.cpp:313] Batch 8, loss = 0.534247
+I1206 20:05:02.200654 17946 caffe.cpp:313] Batch 9, accuracy = 0.78
+I1206 20:05:02.201050 17946 caffe.cpp:313] Batch 9, loss = 0.497663
+I1206 20:05:02.238865 17946 caffe.cpp:313] Batch 10, accuracy = 0.77
+I1206 20:05:02.239374 17946 caffe.cpp:313] Batch 10, loss = 0.540925
+I1206 20:05:02.276350 17946 caffe.cpp:313] Batch 11, accuracy = 0.76
+I1206 20:05:02.276860 17946 caffe.cpp:313] Batch 11, loss = 0.534326
+I1206 20:05:02.313856 17946 caffe.cpp:313] Batch 12, accuracy = 0.83
+I1206 20:05:02.314252 17946 caffe.cpp:313] Batch 12, loss = 0.453495
+I1206 20:05:02.355600 17946 caffe.cpp:313] Batch 13, accuracy = 0.81
+I1206 20:05:02.356122 17946 caffe.cpp:313] Batch 13, loss = 0.483287
+I1206 20:05:02.388064 17946 caffe.cpp:313] Batch 14, accuracy = 0.85
+I1206 20:05:02.394155 17946 caffe.cpp:313] Batch 14, loss = 0.425486
+I1206 20:05:02.438308 17946 caffe.cpp:313] Batch 15, accuracy = 0.85
+I1206 20:05:02.449568 17946 caffe.cpp:313] Batch 15, loss = 0.423759
+I1206 20:05:02.499908 17946 caffe.cpp:313] Batch 16, accuracy = 0.79
+I1206 20:05:02.500425 17946 caffe.cpp:313] Batch 16, loss = 0.50369
+I1206 20:05:02.570377 17946 caffe.cpp:313] Batch 17, accuracy = 0.75
+I1206 20:05:02.570945 17946 caffe.cpp:313] Batch 17, loss = 0.544909
+I1206 20:05:02.617498 17946 caffe.cpp:313] Batch 18, accuracy = 0.9
+I1206 20:05:02.620729 17946 caffe.cpp:313] Batch 18, loss = 0.367577
+I1206 20:05:02.670102 17946 caffe.cpp:313] Batch 19, accuracy = 0.79
+I1206 20:05:02.677155 17946 caffe.cpp:313] Batch 19, loss = 0.504389
+I1206 20:05:02.736879 17946 caffe.cpp:313] Batch 20, accuracy = 0.77
+I1206 20:05:02.740792 17946 caffe.cpp:313] Batch 20, loss = 0.530635
+I1206 20:05:02.799082 17946 caffe.cpp:313] Batch 21, accuracy = 0.86
+I1206 20:05:02.799414 17946 caffe.cpp:313] Batch 21, loss = 0.402911
+I1206 20:05:02.857647 17946 caffe.cpp:313] Batch 22, accuracy = 0.76
+I1206 20:05:02.857733 17946 caffe.cpp:313] Batch 22, loss = 0.532627
+I1206 20:05:02.908752 17946 caffe.cpp:313] Batch 23, accuracy = 0.77
+I1206 20:05:02.908845 17946 caffe.cpp:313] Batch 23, loss = 0.520342
+I1206 20:05:02.969523 17946 caffe.cpp:313] Batch 24, accuracy = 0.76
+I1206 20:05:02.970129 17946 caffe.cpp:313] Batch 24, loss = 0.549814
+I1206 20:05:03.027297 17946 caffe.cpp:313] Batch 25, accuracy = 0.82
+I1206 20:05:03.027889 17946 caffe.cpp:313] Batch 25, loss = 0.469218
+I1206 20:05:03.079967 17946 caffe.cpp:313] Batch 26, accuracy = 0.76
+I1206 20:05:03.082203 17946 caffe.cpp:313] Batch 26, loss = 0.534329
+I1206 20:05:03.144835 17946 caffe.cpp:313] Batch 27, accuracy = 0.85
+I1206 20:05:03.145423 17946 caffe.cpp:313] Batch 27, loss = 0.411719
+I1206 20:05:03.191165 17946 caffe.cpp:313] Batch 28, accuracy = 0.79
+I1206 20:05:03.193343 17946 caffe.cpp:313] Batch 28, loss = 0.490609
+I1206 20:05:03.241569 17946 caffe.cpp:313] Batch 29, accuracy = 0.8
+I1206 20:05:03.253774 17946 caffe.cpp:313] Batch 29, loss = 0.485224
+I1206 20:05:03.308357 17946 caffe.cpp:313] Batch 30, accuracy = 0.79
+I1206 20:05:03.308945 17946 caffe.cpp:313] Batch 30, loss = 0.499175
+I1206 20:05:03.361579 17946 caffe.cpp:313] Batch 31, accuracy = 0.78
+I1206 20:05:03.361599 17946 caffe.cpp:313] Batch 31, loss = 0.547498
+I1206 20:05:03.422931 17946 caffe.cpp:313] Batch 32, accuracy = 0.76
+I1206 20:05:03.422977 17946 caffe.cpp:313] Batch 32, loss = 0.56004
+I1206 20:05:03.458858 17946 caffe.cpp:313] Batch 33, accuracy = 0.73
+I1206 20:05:03.458899 17946 caffe.cpp:313] Batch 33, loss = 0.590108
+I1206 20:05:03.495677 17946 caffe.cpp:313] Batch 34, accuracy = 0.82
+I1206 20:05:03.495730 17946 caffe.cpp:313] Batch 34, loss = 0.472618
+I1206 20:05:03.525538 17946 caffe.cpp:313] Batch 35, accuracy = 0.73
+I1206 20:05:03.525564 17946 caffe.cpp:313] Batch 35, loss = 0.584991
+I1206 20:05:03.592916 17946 caffe.cpp:313] Batch 36, accuracy = 0.83
+I1206 20:05:03.592937 17946 caffe.cpp:313] Batch 36, loss = 0.450102
+I1206 20:05:03.645112 17946 caffe.cpp:313] Batch 37, accuracy = 0.74
+I1206 20:05:03.645143 17946 caffe.cpp:313] Batch 37, loss = 0.572653
+I1206 20:05:03.703526 17946 caffe.cpp:313] Batch 38, accuracy = 0.85
+I1206 20:05:03.704064 17946 caffe.cpp:313] Batch 38, loss = 0.413469
+I1206 20:05:03.760341 17946 caffe.cpp:313] Batch 39, accuracy = 0.8
+I1206 20:05:03.761217 17946 caffe.cpp:313] Batch 39, loss = 0.474879
+I1206 20:05:03.809141 17946 caffe.cpp:313] Batch 40, accuracy = 0.84
+I1206 20:05:03.809739 17946 caffe.cpp:313] Batch 40, loss = 0.434317
+I1206 20:05:03.862613 17946 caffe.cpp:313] Batch 41, accuracy = 0.75
+I1206 20:05:03.864686 17946 caffe.cpp:313] Batch 41, loss = 0.582674
+I1206 20:05:03.923686 17946 caffe.cpp:313] Batch 42, accuracy = 0.79
+I1206 20:05:03.923724 17946 caffe.cpp:313] Batch 42, loss = 0.521533
+I1206 20:05:03.971343 17946 caffe.cpp:313] Batch 43, accuracy = 0.8
+I1206 20:05:03.971382 17946 caffe.cpp:313] Batch 43, loss = 0.488672
+I1206 20:05:04.020356 17946 caffe.cpp:313] Batch 44, accuracy = 0.79
+I1206 20:05:04.026160 17946 caffe.cpp:313] Batch 44, loss = 0.507851
+I1206 20:05:04.078158 17946 caffe.cpp:313] Batch 45, accuracy = 0.77
+I1206 20:05:04.078182 17946 caffe.cpp:313] Batch 45, loss = 0.527242
+I1206 20:05:04.125897 17946 caffe.cpp:313] Batch 46, accuracy = 0.77
+I1206 20:05:04.125944 17946 caffe.cpp:313] Batch 46, loss = 0.534084
+I1206 20:05:04.178577 17946 caffe.cpp:313] Batch 47, accuracy = 0.84
+I1206 20:05:04.178619 17946 caffe.cpp:313] Batch 47, loss = 0.425634
+I1206 20:05:04.232681 17946 caffe.cpp:313] Batch 48, accuracy = 0.73
+I1206 20:05:04.232728 17946 caffe.cpp:313] Batch 48, loss = 0.590108
+I1206 20:05:04.286142 17946 caffe.cpp:313] Batch 49, accuracy = 0.76
+I1206 20:05:04.286193 17946 caffe.cpp:313] Batch 49, loss = 0.560103
+I1206 20:05:04.286204 17946 caffe.cpp:318] Loss: 0.506666
+I1206 20:05:04.286221 17946 caffe.cpp:330] accuracy = 0.7878
+I1206 20:05:04.286234 17946 caffe.cpp:330] loss = 0.506666 (* 1 = 0.506666 loss)
