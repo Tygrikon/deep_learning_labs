@@ -7,6 +7,7 @@ import time
 DATASET_URL = "https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/static/"
 DATASET_FILE_NAME = "wiki.tar.gz"
 DATASET_FOLDER = "./dataset/"
+DATASET_ARCHIEVE = DATASET_FOLDER + DATASET_FILE_NAME
 
 BYTES_IN_KBYTE = 1024
 KBYTES_IN_MEGABYTE = 1024
@@ -40,8 +41,9 @@ def download_archive(file_name, source, target_file):
 def retrieve_dataset():
     if not os.path.exists(DATASET_FOLDER):
         os.makedirs(DATASET_FOLDER)
-    download_archive(DATASET_FILE_NAME, DATASET_URL,
-                     os.path.relative(DATASET_FOLDER + DATASET_FILE_NAME))
+    if not os.path.exists(DATASET_ARCHIEVE):
+        download_archive(DATASET_FILE_NAME, DATASET_URL, DATASET_ARCHIEVE)
+    print("Dataset archive is located in the {0}".format(DATASET_FOLDER))
 
 
 def main():
