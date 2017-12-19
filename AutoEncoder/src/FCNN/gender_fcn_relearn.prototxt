@@ -1,0 +1,95 @@
+name: "SimpleFCN"
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../../train.lst"
+    new_width: 150
+    new_height: 150
+    batch_size: 100
+    root_folder: "../../data/"
+  }
+}
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../../test.lst"
+    new_width: 150
+    new_height: 150
+    batch_size: 100
+    root_folder: "../../data/"
+  }
+}
+layer {
+  name: "hidden"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden"
+  inner_product_param {
+    num_output: 1000
+  }
+}
+layer {
+  name: "sigm"
+  type: "Sigmoid"
+  bottom: "hidden"
+  top: "sigm"
+}
+layer {
+  name: "finalLayer"
+  type: "InnerProduct"
+  bottom: "sigm"
+  top: "finalLayer"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "SoftLoss"
+  type: "SoftmaxWithLoss"
+  bottom: "finalLayer"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "softmaxOut"
+  type: "Softmax"
+  bottom: "finalLayer"
+  top: "output"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "output"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
