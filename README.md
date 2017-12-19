@@ -77,8 +77,8 @@ accuracy = *TRUE / N*, где N - общее число примеров в те
 
 ### Используемые конфигурации оборудования
 
-* Процессор Intel® Core™ i5-6600 CPU @ 3.30GHz × 4. Видеокарта GeForce GTX 1080/PCIe/SSE2. Оперативная память: DDR4 16gb
-* Процессор: Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz . Видеокарта: Tesla K20X. Оперативная память: 64Gb .
+* Процессор Intel® Core™ i5-6600 CPU @ 3.30GHz. Видеокарта GeForce GTX 1080/PCIe/SSE2. Оперативная память: DDR4 16gb
+* Процессор: Intel Sandy Bridge E5-2660 2.2 GHz. Видеокарта: Tesla K20X. Оперативная память: 64Gb .
 
 
 <!-- LINKS -->
