@@ -81,6 +81,19 @@ accuracy = *TRUE / N*, где N - общее число примеров в те
 * Процессор: Intel Sandy Bridge E5-2660 2.2 GHz. Видеокарта: Tesla K20X. Оперативная память: 64Gb .
 
 
+### Итоговые результаты по всем лабораторным работам
+
+| Тип сети        | Имя сети            | Точность    |
+| --------------- |:-------------------:| -----------:|
+|      FCNN       | SimpleFCN+sigm      |   0.8338    |
+|      FCNN       | Three layers        |   0.8158    |
+|      CNN        | Avg                 |   0.9083    |
+|      CNN        | Max                 |   0.9004    |
+|   AutoEncoder   | FCNN                |   0.7878    |
+|   AutoEncoder   | Stack CNN           |   0.7870    |
+| TransferLearning| Новый классификатор |   0.9248    |
+| TransferLearning| Исходная сеть       |   0.8616    |
+
 <!-- LINKS -->
 
 [dataset]: https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/
