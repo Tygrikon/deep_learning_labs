@@ -1,0 +1,723 @@
+Train FCN on MNIST dataset
+I1206 19:46:51.276216 11570 caffe.cpp:218] Using GPUs 1
+I1206 19:46:52.712743 11570 caffe.cpp:223] GPU 1: Tesla K20X
+I1206 19:46:53.408066 11570 solver.cpp:44] Initializing solver from parameters: 
+test_iter: 120
+test_interval: 500
+base_lr: 0.01
+display: 500
+max_iter: 2000
+lr_policy: "fixed"
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 500
+snapshot_prefix: "gender_fcn/gender_fcn"
+solver_mode: GPU
+device_id: 1
+net: "gender_fcn.prototxt"
+train_state {
+  level: 0
+  stage: ""
+}
+type: "SGD"
+I1206 19:46:53.412364 11570 solver.cpp:87] Creating training net from net file: gender_fcn.prototxt
+I1206 19:46:53.418967 11570 net.cpp:294] The NetState phase (0) differed from the phase (1) specified by a rule in layer gender
+I1206 19:46:53.419013 11570 net.cpp:294] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy
+I1206 19:46:53.419148 11570 net.cpp:51] Initializing net from parameters: 
+name: "SimpleFCN"
+state {
+  phase: TRAIN
+  level: 0
+  stage: ""
+}
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../train.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+    root_folder: "../data/"
+  }
+}
+layer {
+  name: "hidden1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden1"
+  inner_product_param {
+    num_output: 400
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu"
+  type: "ReLU"
+  bottom: "hidden1"
+  top: "relu"
+}
+layer {
+  name: "hidden2"
+  type: "InnerProduct"
+  bottom: "relu"
+  top: "hidden2"
+  inner_product_param {
+    num_output: 50
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "sigm"
+  type: "Sigmoid"
+  bottom: "hidden2"
+  top: "sigm"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "sigm"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+I1206 19:46:53.422143 11570 layer_factory.hpp:77] Creating layer gender
+I1206 19:46:53.423894 11570 net.cpp:84] Creating Layer gender
+I1206 19:46:53.424510 11570 net.cpp:380] gender -> data
+I1206 19:46:53.425680 11570 net.cpp:380] gender -> label
+I1206 19:46:53.427289 11570 image_data_layer.cpp:38] Opening file ../train.lst
+I1206 19:46:53.451145 11570 image_data_layer.cpp:63] A total of 47000 images.
+I1206 19:46:54.837749 11570 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 19:46:54.918524 11570 net.cpp:122] Setting up gender
+I1206 19:46:54.919355 11570 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 19:46:54.919385 11570 net.cpp:129] Top shape: 100 (100)
+I1206 19:46:54.919405 11570 net.cpp:137] Memory required for data: 27000400
+I1206 19:46:54.919430 11570 layer_factory.hpp:77] Creating layer hidden1
+I1206 19:46:54.920349 11570 net.cpp:84] Creating Layer hidden1
+I1206 19:46:54.920387 11570 net.cpp:406] hidden1 <- data
+I1206 19:46:54.920419 11570 net.cpp:380] hidden1 -> hidden1
+I1206 19:46:55.193321 11570 net.cpp:122] Setting up hidden1
+I1206 19:46:55.193403 11570 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:46:55.193426 11570 net.cpp:137] Memory required for data: 27160400
+I1206 19:46:55.194181 11570 layer_factory.hpp:77] Creating layer relu
+I1206 19:46:55.195454 11570 net.cpp:84] Creating Layer relu
+I1206 19:46:55.195502 11570 net.cpp:406] relu <- hidden1
+I1206 19:46:55.195542 11570 net.cpp:380] relu -> relu
+I1206 19:46:55.196104 11570 net.cpp:122] Setting up relu
+I1206 19:46:55.196146 11570 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:46:55.196182 11570 net.cpp:137] Memory required for data: 27320400
+I1206 19:46:55.196208 11570 layer_factory.hpp:77] Creating layer hidden2
+I1206 19:46:55.196233 11570 net.cpp:84] Creating Layer hidden2
+I1206 19:46:55.196255 11570 net.cpp:406] hidden2 <- relu
+I1206 19:46:55.196280 11570 net.cpp:380] hidden2 -> hidden2
+I1206 19:46:55.197206 11570 net.cpp:122] Setting up hidden2
+I1206 19:46:55.197258 11570 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:46:55.197286 11570 net.cpp:137] Memory required for data: 27340400
+I1206 19:46:55.197314 11570 layer_factory.hpp:77] Creating layer sigm
+I1206 19:46:55.197341 11570 net.cpp:84] Creating Layer sigm
+I1206 19:46:55.197363 11570 net.cpp:406] sigm <- hidden2
+I1206 19:46:55.197386 11570 net.cpp:380] sigm -> sigm
+I1206 19:46:55.197896 11570 net.cpp:122] Setting up sigm
+I1206 19:46:55.197953 11570 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:46:55.197978 11570 net.cpp:137] Memory required for data: 27360400
+I1206 19:46:55.198000 11570 layer_factory.hpp:77] Creating layer ip
+I1206 19:46:55.198029 11570 net.cpp:84] Creating Layer ip
+I1206 19:46:55.198053 11570 net.cpp:406] ip <- sigm
+I1206 19:46:55.198083 11570 net.cpp:380] ip -> ip
+I1206 19:46:55.198221 11570 net.cpp:122] Setting up ip
+I1206 19:46:55.198257 11570 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:46:55.198279 11570 net.cpp:137] Memory required for data: 27361200
+I1206 19:46:55.198309 11570 layer_factory.hpp:77] Creating layer loss
+I1206 19:46:55.199095 11570 net.cpp:84] Creating Layer loss
+I1206 19:46:55.199133 11570 net.cpp:406] loss <- ip
+I1206 19:46:55.199170 11570 net.cpp:406] loss <- label
+I1206 19:46:55.199195 11570 net.cpp:380] loss -> loss
+I1206 19:46:55.201055 11570 layer_factory.hpp:77] Creating layer loss
+I1206 19:46:55.201215 11570 net.cpp:122] Setting up loss
+I1206 19:46:55.201251 11570 net.cpp:129] Top shape: (1)
+I1206 19:46:55.201273 11570 net.cpp:132]     with loss weight 1
+I1206 19:46:55.201331 11570 net.cpp:137] Memory required for data: 27361204
+I1206 19:46:55.201354 11570 net.cpp:198] loss needs backward computation.
+I1206 19:46:55.201376 11570 net.cpp:198] ip needs backward computation.
+I1206 19:46:55.201398 11570 net.cpp:198] sigm needs backward computation.
+I1206 19:46:55.201421 11570 net.cpp:198] hidden2 needs backward computation.
+I1206 19:46:55.201442 11570 net.cpp:198] relu needs backward computation.
+I1206 19:46:55.201469 11570 net.cpp:198] hidden1 needs backward computation.
+I1206 19:46:55.201491 11570 net.cpp:200] gender does not need backward computation.
+I1206 19:46:55.201514 11570 net.cpp:242] This network produces output loss
+I1206 19:46:55.201540 11570 net.cpp:255] Network initialization done.
+I1206 19:46:55.202965 11570 solver.cpp:172] Creating test net (#0) specified by net file: gender_fcn.prototxt
+I1206 19:46:55.203021 11570 net.cpp:294] The NetState phase (1) differed from the phase (0) specified by a rule in layer gender
+I1206 19:46:55.203142 11570 net.cpp:51] Initializing net from parameters: 
+name: "SimpleFCN"
+state {
+  phase: TEST
+}
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../test.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+    root_folder: "../data/"
+  }
+}
+layer {
+  name: "hidden1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden1"
+  inner_product_param {
+    num_output: 400
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu"
+  type: "ReLU"
+  bottom: "hidden1"
+  top: "relu"
+}
+layer {
+  name: "hidden2"
+  type: "InnerProduct"
+  bottom: "relu"
+  top: "hidden2"
+  inner_product_param {
+    num_output: 50
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "sigm"
+  type: "Sigmoid"
+  bottom: "hidden2"
+  top: "sigm"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "sigm"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+I1206 19:46:55.203546 11570 layer_factory.hpp:77] Creating layer gender
+I1206 19:46:55.203588 11570 net.cpp:84] Creating Layer gender
+I1206 19:46:55.203629 11570 net.cpp:380] gender -> data
+I1206 19:46:55.203660 11570 net.cpp:380] gender -> label
+I1206 19:46:55.203689 11570 image_data_layer.cpp:38] Opening file ../test.lst
+I1206 19:46:55.210738 11570 image_data_layer.cpp:63] A total of 12000 images.
+I1206 19:46:55.213573 11570 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 19:46:55.293618 11570 net.cpp:122] Setting up gender
+I1206 19:46:55.305486 11570 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 19:46:55.305527 11570 net.cpp:129] Top shape: 100 (100)
+I1206 19:46:55.305550 11570 net.cpp:137] Memory required for data: 27000400
+I1206 19:46:55.305572 11570 layer_factory.hpp:77] Creating layer label_gender_1_split
+I1206 19:46:55.306443 11570 net.cpp:84] Creating Layer label_gender_1_split
+I1206 19:46:55.306483 11570 net.cpp:406] label_gender_1_split <- label
+I1206 19:46:55.306512 11570 net.cpp:380] label_gender_1_split -> label_gender_1_split_0
+I1206 19:46:55.306565 11570 net.cpp:380] label_gender_1_split -> label_gender_1_split_1
+I1206 19:46:55.317746 11570 net.cpp:122] Setting up label_gender_1_split
+I1206 19:46:55.317816 11570 net.cpp:129] Top shape: 100 (100)
+I1206 19:46:55.317849 11570 net.cpp:129] Top shape: 100 (100)
+I1206 19:46:55.317876 11570 net.cpp:137] Memory required for data: 27001200
+I1206 19:46:55.317903 11570 layer_factory.hpp:77] Creating layer hidden1
+I1206 19:46:55.317937 11570 net.cpp:84] Creating Layer hidden1
+I1206 19:46:55.317965 11570 net.cpp:406] hidden1 <- data
+I1206 19:46:55.317997 11570 net.cpp:380] hidden1 -> hidden1
+I1206 19:46:55.633041 11570 net.cpp:122] Setting up hidden1
+I1206 19:46:55.633116 11570 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:46:55.633144 11570 net.cpp:137] Memory required for data: 27161200
+I1206 19:46:55.633179 11570 layer_factory.hpp:77] Creating layer relu
+I1206 19:46:55.633209 11570 net.cpp:84] Creating Layer relu
+I1206 19:46:55.633234 11570 net.cpp:406] relu <- hidden1
+I1206 19:46:55.633261 11570 net.cpp:380] relu -> relu
+I1206 19:46:55.633313 11570 net.cpp:122] Setting up relu
+I1206 19:46:55.633349 11570 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:46:55.633373 11570 net.cpp:137] Memory required for data: 27321200
+I1206 19:46:55.633397 11570 layer_factory.hpp:77] Creating layer hidden2
+I1206 19:46:55.633424 11570 net.cpp:84] Creating Layer hidden2
+I1206 19:46:55.633447 11570 net.cpp:406] hidden2 <- relu
+I1206 19:46:55.633491 11570 net.cpp:380] hidden2 -> hidden2
+I1206 19:46:55.633803 11570 net.cpp:122] Setting up hidden2
+I1206 19:46:55.633841 11570 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:46:55.633864 11570 net.cpp:137] Memory required for data: 27341200
+I1206 19:46:55.633893 11570 layer_factory.hpp:77] Creating layer sigm
+I1206 19:46:55.633919 11570 net.cpp:84] Creating Layer sigm
+I1206 19:46:55.633941 11570 net.cpp:406] sigm <- hidden2
+I1206 19:46:55.633965 11570 net.cpp:380] sigm -> sigm
+I1206 19:46:55.634011 11570 net.cpp:122] Setting up sigm
+I1206 19:46:55.634040 11570 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:46:55.634080 11570 net.cpp:137] Memory required for data: 27361200
+I1206 19:46:55.634109 11570 layer_factory.hpp:77] Creating layer ip
+I1206 19:46:55.634138 11570 net.cpp:84] Creating Layer ip
+I1206 19:46:55.634163 11570 net.cpp:406] ip <- sigm
+I1206 19:46:55.634189 11570 net.cpp:380] ip -> ip
+I1206 19:46:55.634305 11570 net.cpp:122] Setting up ip
+I1206 19:46:55.634341 11570 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:46:55.634366 11570 net.cpp:137] Memory required for data: 27362000
+I1206 19:46:55.634395 11570 layer_factory.hpp:77] Creating layer ip_ip_0_split
+I1206 19:46:55.634424 11570 net.cpp:84] Creating Layer ip_ip_0_split
+I1206 19:46:55.634447 11570 net.cpp:406] ip_ip_0_split <- ip
+I1206 19:46:55.634471 11570 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_0
+I1206 19:46:55.634498 11570 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_1
+I1206 19:46:55.634557 11570 net.cpp:122] Setting up ip_ip_0_split
+I1206 19:46:55.634588 11570 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:46:55.634634 11570 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:46:55.634672 11570 net.cpp:137] Memory required for data: 27363600
+I1206 19:46:55.634698 11570 layer_factory.hpp:77] Creating layer loss
+I1206 19:46:55.634727 11570 net.cpp:84] Creating Layer loss
+I1206 19:46:55.634753 11570 net.cpp:406] loss <- ip_ip_0_split_0
+I1206 19:46:55.634778 11570 net.cpp:406] loss <- label_gender_1_split_0
+I1206 19:46:55.634806 11570 net.cpp:380] loss -> loss
+I1206 19:46:55.634835 11570 layer_factory.hpp:77] Creating layer loss
+I1206 19:46:55.634943 11570 net.cpp:122] Setting up loss
+I1206 19:46:55.634975 11570 net.cpp:129] Top shape: (1)
+I1206 19:46:55.634997 11570 net.cpp:132]     with loss weight 1
+I1206 19:46:55.635028 11570 net.cpp:137] Memory required for data: 27363604
+I1206 19:46:55.635049 11570 layer_factory.hpp:77] Creating layer accuracy
+I1206 19:46:55.635736 11570 net.cpp:84] Creating Layer accuracy
+I1206 19:46:55.635771 11570 net.cpp:406] accuracy <- ip_ip_0_split_1
+I1206 19:46:55.635797 11570 net.cpp:406] accuracy <- label_gender_1_split_1
+I1206 19:46:55.635823 11570 net.cpp:380] accuracy -> accuracy
+I1206 19:46:55.636842 11570 net.cpp:122] Setting up accuracy
+I1206 19:46:55.636883 11570 net.cpp:129] Top shape: (1)
+I1206 19:46:55.636906 11570 net.cpp:137] Memory required for data: 27363608
+I1206 19:46:55.636930 11570 net.cpp:200] accuracy does not need backward computation.
+I1206 19:46:55.636955 11570 net.cpp:198] loss needs backward computation.
+I1206 19:46:55.636979 11570 net.cpp:198] ip_ip_0_split needs backward computation.
+I1206 19:46:55.637001 11570 net.cpp:198] ip needs backward computation.
+I1206 19:46:55.637023 11570 net.cpp:198] sigm needs backward computation.
+I1206 19:46:55.637044 11570 net.cpp:198] hidden2 needs backward computation.
+I1206 19:46:55.637065 11570 net.cpp:198] relu needs backward computation.
+I1206 19:46:55.637087 11570 net.cpp:198] hidden1 needs backward computation.
+I1206 19:46:55.637116 11570 net.cpp:200] label_gender_1_split does not need backward computation.
+I1206 19:46:55.637141 11570 net.cpp:200] gender does not need backward computation.
+I1206 19:46:55.637162 11570 net.cpp:242] This network produces output accuracy
+I1206 19:46:55.637183 11570 net.cpp:242] This network produces output loss
+I1206 19:46:55.637213 11570 net.cpp:255] Network initialization done.
+I1206 19:46:55.637269 11570 solver.cpp:56] Solver scaffolding done.
+I1206 19:46:55.637893 11570 caffe.cpp:248] Starting Optimization
+I1206 19:46:55.638315 11570 solver.cpp:272] Solving SimpleFCN
+I1206 19:46:55.638342 11570 solver.cpp:273] Learning Rate Policy: fixed
+I1206 19:46:55.640164 11570 solver.cpp:330] Iteration 0, Testing net (#0)
+I1206 19:46:55.697089 11570 blocking_queue.cpp:49] Waiting for data
+I1206 19:47:40.466015 11570 solver.cpp:397]     Test net output #0: accuracy = 0.782417
+I1206 19:47:40.467416 11570 solver.cpp:397]     Test net output #1: loss = 0.534605 (* 1 = 0.534605 loss)
+I1206 19:47:40.484589 11570 solver.cpp:218] Iteration 0 (0 iter/s, 44.8459s/500 iters), loss = 0.483357
+I1206 19:47:40.484665 11570 solver.cpp:237]     Train net output #0: loss = 0.483357 (* 1 = 0.483357 loss)
+I1206 19:47:40.485363 11570 sgd_solver.cpp:105] Iteration 0, lr = 0.01
+I1206 19:51:11.987989 11570 solver.cpp:447] Snapshotting to binary proto file gender_fcn/gender_fcn_iter_500.caffemodel
+I1206 19:51:13.866813 11570 sgd_solver.cpp:273] Snapshotting solver state to binary proto file gender_fcn/gender_fcn_iter_500.solverstate
+I1206 19:51:15.398936 11570 solver.cpp:330] Iteration 500, Testing net (#0)
+I1206 19:51:44.714479 11570 solver.cpp:397]     Test net output #0: accuracy = 0.807334
+I1206 19:51:44.714627 11570 solver.cpp:397]     Test net output #1: loss = 0.45191 (* 1 = 0.45191 loss)
+I1206 19:51:44.730677 11570 solver.cpp:218] Iteration 500 (2.04711 iter/s, 244.246s/500 iters), loss = 0.389429
+I1206 19:51:44.740658 11570 solver.cpp:237]     Train net output #0: loss = 0.389429 (* 1 = 0.389429 loss)
+I1206 19:51:44.740712 11570 sgd_solver.cpp:105] Iteration 500, lr = 0.01
+I1206 19:52:52.352015 11570 blocking_queue.cpp:49] Waiting for data
+I1206 19:53:47.444247 11570 solver.cpp:447] Snapshotting to binary proto file gender_fcn/gender_fcn_iter_1000.caffemodel
+I1206 19:53:49.885018 11570 sgd_solver.cpp:273] Snapshotting solver state to binary proto file gender_fcn/gender_fcn_iter_1000.solverstate
+I1206 19:53:51.950660 11570 solver.cpp:330] Iteration 1000, Testing net (#0)
+I1206 19:54:28.534401 11570 solver.cpp:397]     Test net output #0: accuracy = 0.80975
+I1206 19:54:28.534564 11570 solver.cpp:397]     Test net output #1: loss = 0.450419 (* 1 = 0.450419 loss)
+I1206 19:54:28.550750 11570 solver.cpp:218] Iteration 1000 (3.05231 iter/s, 163.81s/500 iters), loss = 0.403902
+I1206 19:54:28.591878 11570 solver.cpp:237]     Train net output #0: loss = 0.403902 (* 1 = 0.403902 loss)
+I1206 19:54:28.591969 11570 sgd_solver.cpp:105] Iteration 1000, lr = 0.01
+I1206 19:56:29.151201 11570 solver.cpp:447] Snapshotting to binary proto file gender_fcn/gender_fcn_iter_1500.caffemodel
+I1206 19:56:30.910251 11570 sgd_solver.cpp:273] Snapshotting solver state to binary proto file gender_fcn/gender_fcn_iter_1500.solverstate
+I1206 19:56:32.578363 11570 solver.cpp:330] Iteration 1500, Testing net (#0)
+I1206 19:57:04.297701 11570 solver.cpp:397]     Test net output #0: accuracy = 0.814
+I1206 19:57:04.297953 11570 solver.cpp:397]     Test net output #1: loss = 0.444345 (* 1 = 0.444345 loss)
+I1206 19:57:04.314198 11570 solver.cpp:218] Iteration 1500 (3.21084 iter/s, 155.723s/500 iters), loss = 0.402722
+I1206 19:57:04.319988 11570 solver.cpp:237]     Train net output #0: loss = 0.402722 (* 1 = 0.402722 loss)
+I1206 19:57:04.320130 11570 sgd_solver.cpp:105] Iteration 1500, lr = 0.01
+I1206 19:57:13.508039 11570 blocking_queue.cpp:49] Waiting for data
+I1206 19:59:12.226375 11570 solver.cpp:447] Snapshotting to binary proto file gender_fcn/gender_fcn_iter_2000.caffemodel
+I1206 19:59:14.288403 11570 sgd_solver.cpp:273] Snapshotting solver state to binary proto file gender_fcn/gender_fcn_iter_2000.solverstate
+I1206 19:59:15.801367 11570 solver.cpp:310] Iteration 2000, loss = 0.575239
+I1206 19:59:15.801483 11570 solver.cpp:330] Iteration 2000, Testing net (#0)
+I1206 19:59:52.283288 11570 solver.cpp:397]     Test net output #0: accuracy = 0.812917
+I1206 19:59:52.283510 11570 solver.cpp:397]     Test net output #1: loss = 0.440956 (* 1 = 0.440956 loss)
+I1206 19:59:52.283555 11570 solver.cpp:315] Optimization Done.
+I1206 19:59:52.283582 11570 caffe.cpp:259] Optimization Done.
+Test FCN on MNIST dataset
+I1206 19:59:53.682767 11608 caffe.cpp:284] Use CPU.
+I1206 19:59:55.658963 11608 net.cpp:294] The NetState phase (1) differed from the phase (0) specified by a rule in layer gender
+I1206 19:59:55.659289 11608 net.cpp:51] Initializing net from parameters: 
+name: "SimpleFCN"
+state {
+  phase: TEST
+  level: 0
+  stage: ""
+}
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../test.lst"
+    batch_size: 100
+    new_height: 150
+    new_width: 150
+    root_folder: "../data/"
+  }
+}
+layer {
+  name: "hidden1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden1"
+  inner_product_param {
+    num_output: 400
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "relu"
+  type: "ReLU"
+  bottom: "hidden1"
+  top: "relu"
+}
+layer {
+  name: "hidden2"
+  type: "InnerProduct"
+  bottom: "relu"
+  top: "hidden2"
+  inner_product_param {
+    num_output: 50
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "sigm"
+  type: "Sigmoid"
+  bottom: "hidden2"
+  top: "sigm"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "sigm"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+I1206 19:59:55.659499 11608 layer_factory.hpp:77] Creating layer gender
+I1206 19:59:55.659621 11608 net.cpp:84] Creating Layer gender
+I1206 19:59:55.659687 11608 net.cpp:380] gender -> data
+I1206 19:59:55.659761 11608 net.cpp:380] gender -> label
+I1206 19:59:55.659847 11608 image_data_layer.cpp:38] Opening file ../test.lst
+I1206 19:59:55.664659 11608 image_data_layer.cpp:63] A total of 12000 images.
+I1206 19:59:56.984300 11608 image_data_layer.cpp:90] output data size: 100,3,150,150
+I1206 19:59:57.022291 11608 net.cpp:122] Setting up gender
+I1206 19:59:57.022398 11608 net.cpp:129] Top shape: 100 3 150 150 (6750000)
+I1206 19:59:57.022433 11608 net.cpp:129] Top shape: 100 (100)
+I1206 19:59:57.022455 11608 net.cpp:137] Memory required for data: 27000400
+I1206 19:59:57.022480 11608 layer_factory.hpp:77] Creating layer label_gender_1_split
+I1206 19:59:57.022553 11608 net.cpp:84] Creating Layer label_gender_1_split
+I1206 19:59:57.022580 11608 net.cpp:406] label_gender_1_split <- label
+I1206 19:59:57.022611 11608 net.cpp:380] label_gender_1_split -> label_gender_1_split_0
+I1206 19:59:57.022644 11608 net.cpp:380] label_gender_1_split -> label_gender_1_split_1
+I1206 19:59:57.022683 11608 net.cpp:122] Setting up label_gender_1_split
+I1206 19:59:57.022709 11608 net.cpp:129] Top shape: 100 (100)
+I1206 19:59:57.022732 11608 net.cpp:129] Top shape: 100 (100)
+I1206 19:59:57.022749 11608 net.cpp:137] Memory required for data: 27001200
+I1206 19:59:57.022768 11608 layer_factory.hpp:77] Creating layer hidden1
+I1206 19:59:57.022811 11608 net.cpp:84] Creating Layer hidden1
+I1206 19:59:57.022833 11608 net.cpp:406] hidden1 <- data
+I1206 19:59:57.022855 11608 net.cpp:380] hidden1 -> hidden1
+I1206 19:59:57.270566 11608 net.cpp:122] Setting up hidden1
+I1206 19:59:57.270643 11608 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:59:57.270668 11608 net.cpp:137] Memory required for data: 27161200
+I1206 19:59:57.270726 11608 layer_factory.hpp:77] Creating layer relu
+I1206 19:59:57.270839 11608 net.cpp:84] Creating Layer relu
+I1206 19:59:57.270870 11608 net.cpp:406] relu <- hidden1
+I1206 19:59:57.270897 11608 net.cpp:380] relu -> relu
+I1206 19:59:57.270947 11608 net.cpp:122] Setting up relu
+I1206 19:59:57.270975 11608 net.cpp:129] Top shape: 100 400 (40000)
+I1206 19:59:57.270998 11608 net.cpp:137] Memory required for data: 27321200
+I1206 19:59:57.271021 11608 layer_factory.hpp:77] Creating layer hidden2
+I1206 19:59:57.271051 11608 net.cpp:84] Creating Layer hidden2
+I1206 19:59:57.271073 11608 net.cpp:406] hidden2 <- relu
+I1206 19:59:57.271117 11608 net.cpp:380] hidden2 -> hidden2
+I1206 19:59:57.271325 11608 net.cpp:122] Setting up hidden2
+I1206 19:59:57.271358 11608 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:59:57.271378 11608 net.cpp:137] Memory required for data: 27341200
+I1206 19:59:57.271404 11608 layer_factory.hpp:77] Creating layer sigm
+I1206 19:59:57.271427 11608 net.cpp:84] Creating Layer sigm
+I1206 19:59:57.271447 11608 net.cpp:406] sigm <- hidden2
+I1206 19:59:57.271468 11608 net.cpp:380] sigm -> sigm
+I1206 19:59:57.271504 11608 net.cpp:122] Setting up sigm
+I1206 19:59:57.271529 11608 net.cpp:129] Top shape: 100 50 (5000)
+I1206 19:59:57.271553 11608 net.cpp:137] Memory required for data: 27361200
+I1206 19:59:57.271572 11608 layer_factory.hpp:77] Creating layer ip
+I1206 19:59:57.271596 11608 net.cpp:84] Creating Layer ip
+I1206 19:59:57.271621 11608 net.cpp:406] ip <- sigm
+I1206 19:59:57.271646 11608 net.cpp:380] ip -> ip
+I1206 19:59:57.271683 11608 net.cpp:122] Setting up ip
+I1206 19:59:57.271711 11608 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:59:57.271731 11608 net.cpp:137] Memory required for data: 27362000
+I1206 19:59:57.271755 11608 layer_factory.hpp:77] Creating layer ip_ip_0_split
+I1206 19:59:57.271781 11608 net.cpp:84] Creating Layer ip_ip_0_split
+I1206 19:59:57.271805 11608 net.cpp:406] ip_ip_0_split <- ip
+I1206 19:59:57.271827 11608 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_0
+I1206 19:59:57.271853 11608 net.cpp:380] ip_ip_0_split -> ip_ip_0_split_1
+I1206 19:59:57.271910 11608 net.cpp:122] Setting up ip_ip_0_split
+I1206 19:59:57.271939 11608 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:59:57.271967 11608 net.cpp:129] Top shape: 100 2 (200)
+I1206 19:59:57.271987 11608 net.cpp:137] Memory required for data: 27363600
+I1206 19:59:57.272011 11608 layer_factory.hpp:77] Creating layer loss
+I1206 19:59:57.272063 11608 net.cpp:84] Creating Layer loss
+I1206 19:59:57.272087 11608 net.cpp:406] loss <- ip_ip_0_split_0
+I1206 19:59:57.272117 11608 net.cpp:406] loss <- label_gender_1_split_0
+I1206 19:59:57.272145 11608 net.cpp:380] loss -> loss
+I1206 19:59:57.272219 11608 layer_factory.hpp:77] Creating layer loss
+I1206 19:59:57.272271 11608 net.cpp:122] Setting up loss
+I1206 19:59:57.272296 11608 net.cpp:129] Top shape: (1)
+I1206 19:59:57.272316 11608 net.cpp:132]     with loss weight 1
+I1206 19:59:57.272379 11608 net.cpp:137] Memory required for data: 27363604
+I1206 19:59:57.272402 11608 layer_factory.hpp:77] Creating layer accuracy
+I1206 19:59:57.272450 11608 net.cpp:84] Creating Layer accuracy
+I1206 19:59:57.272477 11608 net.cpp:406] accuracy <- ip_ip_0_split_1
+I1206 19:59:57.272500 11608 net.cpp:406] accuracy <- label_gender_1_split_1
+I1206 19:59:57.272526 11608 net.cpp:380] accuracy -> accuracy
+I1206 19:59:57.272578 11608 net.cpp:122] Setting up accuracy
+I1206 19:59:57.272603 11608 net.cpp:129] Top shape: (1)
+I1206 19:59:57.272622 11608 net.cpp:137] Memory required for data: 27363608
+I1206 19:59:57.272646 11608 net.cpp:200] accuracy does not need backward computation.
+I1206 19:59:57.272668 11608 net.cpp:198] loss needs backward computation.
+I1206 19:59:57.272689 11608 net.cpp:198] ip_ip_0_split needs backward computation.
+I1206 19:59:57.272711 11608 net.cpp:198] ip needs backward computation.
+I1206 19:59:57.272735 11608 net.cpp:198] sigm needs backward computation.
+I1206 19:59:57.272756 11608 net.cpp:198] hidden2 needs backward computation.
+I1206 19:59:57.272781 11608 net.cpp:198] relu needs backward computation.
+I1206 19:59:57.272802 11608 net.cpp:198] hidden1 needs backward computation.
+I1206 19:59:57.272822 11608 net.cpp:200] label_gender_1_split does not need backward computation.
+I1206 19:59:57.272845 11608 net.cpp:200] gender does not need backward computation.
+I1206 19:59:57.272866 11608 net.cpp:242] This network produces output accuracy
+I1206 19:59:57.272888 11608 net.cpp:242] This network produces output loss
+I1206 19:59:57.272918 11608 net.cpp:255] Network initialization done.
+I1206 19:59:57.485740 11608 caffe.cpp:290] Running for 50 iterations.
+I1206 19:59:57.549031 11608 caffe.cpp:313] Batch 0, accuracy = 0.85
+I1206 19:59:57.549156 11608 caffe.cpp:313] Batch 0, loss = 0.365787
+I1206 19:59:57.581212 11608 caffe.cpp:313] Batch 1, accuracy = 0.79
+I1206 19:59:57.581339 11608 caffe.cpp:313] Batch 1, loss = 0.517945
+I1206 19:59:57.581380 11608 blocking_queue.cpp:49] Waiting for data
+I1206 19:59:57.666000 11608 caffe.cpp:313] Batch 2, accuracy = 0.87
+I1206 19:59:57.666081 11608 caffe.cpp:313] Batch 2, loss = 0.365803
+I1206 19:59:57.856186 11608 caffe.cpp:313] Batch 3, accuracy = 0.84
+I1206 19:59:57.856309 11608 caffe.cpp:313] Batch 3, loss = 0.3794
+I1206 19:59:58.053653 11608 caffe.cpp:313] Batch 4, accuracy = 0.81
+I1206 19:59:58.053747 11608 caffe.cpp:313] Batch 4, loss = 0.434718
+I1206 19:59:58.246049 11608 caffe.cpp:313] Batch 5, accuracy = 0.71
+I1206 19:59:58.246176 11608 caffe.cpp:313] Batch 5, loss = 0.568798
+I1206 19:59:58.438778 11608 caffe.cpp:313] Batch 6, accuracy = 0.81
+I1206 19:59:58.438908 11608 caffe.cpp:313] Batch 6, loss = 0.444793
+I1206 19:59:58.651023 11608 caffe.cpp:313] Batch 7, accuracy = 0.81
+I1206 19:59:58.651127 11608 caffe.cpp:313] Batch 7, loss = 0.498247
+I1206 19:59:58.856866 11608 caffe.cpp:313] Batch 8, accuracy = 0.81
+I1206 19:59:58.856986 11608 caffe.cpp:313] Batch 8, loss = 0.451039
+I1206 19:59:59.060261 11608 caffe.cpp:313] Batch 9, accuracy = 0.78
+I1206 19:59:59.060371 11608 caffe.cpp:313] Batch 9, loss = 0.501924
+I1206 19:59:59.247822 11608 caffe.cpp:313] Batch 10, accuracy = 0.78
+I1206 19:59:59.247910 11608 caffe.cpp:313] Batch 10, loss = 0.523934
+I1206 19:59:59.433995 11608 caffe.cpp:313] Batch 11, accuracy = 0.79
+I1206 19:59:59.434123 11608 caffe.cpp:313] Batch 11, loss = 0.457536
+I1206 19:59:59.622251 11608 caffe.cpp:313] Batch 12, accuracy = 0.86
+I1206 19:59:59.622326 11608 caffe.cpp:313] Batch 12, loss = 0.350436
+I1206 19:59:59.817785 11608 caffe.cpp:313] Batch 13, accuracy = 0.82
+I1206 19:59:59.817903 11608 caffe.cpp:313] Batch 13, loss = 0.404409
+I1206 20:00:00.005815 11608 caffe.cpp:313] Batch 14, accuracy = 0.88
+I1206 20:00:00.005898 11608 caffe.cpp:313] Batch 14, loss = 0.276922
+I1206 20:00:00.193158 11608 caffe.cpp:313] Batch 15, accuracy = 0.87
+I1206 20:00:00.193280 11608 caffe.cpp:313] Batch 15, loss = 0.38664
+I1206 20:00:00.384253 11608 caffe.cpp:313] Batch 16, accuracy = 0.81
+I1206 20:00:00.384333 11608 caffe.cpp:313] Batch 16, loss = 0.455113
+I1206 20:00:00.586055 11608 caffe.cpp:313] Batch 17, accuracy = 0.81
+I1206 20:00:00.586213 11608 caffe.cpp:313] Batch 17, loss = 0.437879
+I1206 20:00:00.793604 11608 caffe.cpp:313] Batch 18, accuracy = 0.9
+I1206 20:00:00.793709 11608 caffe.cpp:313] Batch 18, loss = 0.275986
+I1206 20:00:01.023535 11608 caffe.cpp:313] Batch 19, accuracy = 0.82
+I1206 20:00:01.023656 11608 caffe.cpp:313] Batch 19, loss = 0.442909
+I1206 20:00:01.238250 11608 caffe.cpp:313] Batch 20, accuracy = 0.82
+I1206 20:00:01.238332 11608 caffe.cpp:313] Batch 20, loss = 0.445716
+I1206 20:00:01.459508 11608 caffe.cpp:313] Batch 21, accuracy = 0.89
+I1206 20:00:01.459597 11608 caffe.cpp:313] Batch 21, loss = 0.311513
+I1206 20:00:01.652878 11608 caffe.cpp:313] Batch 22, accuracy = 0.77
+I1206 20:00:01.653018 11608 caffe.cpp:313] Batch 22, loss = 0.514771
+I1206 20:00:01.846623 11608 caffe.cpp:313] Batch 23, accuracy = 0.81
+I1206 20:00:01.846729 11608 caffe.cpp:313] Batch 23, loss = 0.466904
+I1206 20:00:02.055034 11608 caffe.cpp:313] Batch 24, accuracy = 0.81
+I1206 20:00:02.055115 11608 caffe.cpp:313] Batch 24, loss = 0.446351
+I1206 20:00:02.238394 11608 caffe.cpp:313] Batch 25, accuracy = 0.85
+I1206 20:00:02.238477 11608 caffe.cpp:313] Batch 25, loss = 0.359867
+I1206 20:00:02.428647 11608 caffe.cpp:313] Batch 26, accuracy = 0.78
+I1206 20:00:02.438647 11608 caffe.cpp:313] Batch 26, loss = 0.508199
+I1206 20:00:02.614022 11608 caffe.cpp:313] Batch 27, accuracy = 0.87
+I1206 20:00:02.614104 11608 caffe.cpp:313] Batch 27, loss = 0.312106
+I1206 20:00:02.803647 11608 caffe.cpp:313] Batch 28, accuracy = 0.8
+I1206 20:00:02.803777 11608 caffe.cpp:313] Batch 28, loss = 0.406163
+I1206 20:00:02.997532 11608 caffe.cpp:313] Batch 29, accuracy = 0.8
+I1206 20:00:02.997611 11608 caffe.cpp:313] Batch 29, loss = 0.476393
+I1206 20:00:03.188657 11608 caffe.cpp:313] Batch 30, accuracy = 0.81
+I1206 20:00:03.188786 11608 caffe.cpp:313] Batch 30, loss = 0.429956
+I1206 20:00:03.374341 11608 caffe.cpp:313] Batch 31, accuracy = 0.8
+I1206 20:00:03.374452 11608 caffe.cpp:313] Batch 31, loss = 0.502556
+I1206 20:00:03.572299 11608 caffe.cpp:313] Batch 32, accuracy = 0.77
+I1206 20:00:03.572417 11608 caffe.cpp:313] Batch 32, loss = 0.492716
+I1206 20:00:03.762670 11608 caffe.cpp:313] Batch 33, accuracy = 0.76
+I1206 20:00:03.762789 11608 caffe.cpp:313] Batch 33, loss = 0.53166
+I1206 20:00:03.986984 11608 caffe.cpp:313] Batch 34, accuracy = 0.82
+I1206 20:00:03.987066 11608 caffe.cpp:313] Batch 34, loss = 0.441649
+I1206 20:00:04.190744 11608 caffe.cpp:313] Batch 35, accuracy = 0.77
+I1206 20:00:04.190868 11608 caffe.cpp:313] Batch 35, loss = 0.544677
+I1206 20:00:04.389205 11608 caffe.cpp:313] Batch 36, accuracy = 0.84
+I1206 20:00:04.389317 11608 caffe.cpp:313] Batch 36, loss = 0.3754
+I1206 20:00:04.609411 11608 caffe.cpp:313] Batch 37, accuracy = 0.78
+I1206 20:00:04.609540 11608 caffe.cpp:313] Batch 37, loss = 0.479301
+I1206 20:00:04.830646 11608 caffe.cpp:313] Batch 38, accuracy = 0.88
+I1206 20:00:04.830740 11608 caffe.cpp:313] Batch 38, loss = 0.329522
+I1206 20:00:05.019292 11608 caffe.cpp:313] Batch 39, accuracy = 0.84
+I1206 20:00:05.019381 11608 caffe.cpp:313] Batch 39, loss = 0.340017
+I1206 20:00:05.234459 11608 caffe.cpp:313] Batch 40, accuracy = 0.84
+I1206 20:00:05.234606 11608 caffe.cpp:313] Batch 40, loss = 0.347646
+I1206 20:00:05.437448 11608 caffe.cpp:313] Batch 41, accuracy = 0.77
+I1206 20:00:05.437530 11608 caffe.cpp:313] Batch 41, loss = 0.512856
+I1206 20:00:05.660696 11608 caffe.cpp:313] Batch 42, accuracy = 0.83
+I1206 20:00:05.660817 11608 caffe.cpp:313] Batch 42, loss = 0.447038
+I1206 20:00:05.851820 11608 caffe.cpp:313] Batch 43, accuracy = 0.82
+I1206 20:00:05.851897 11608 caffe.cpp:313] Batch 43, loss = 0.391604
+I1206 20:00:06.045629 11608 caffe.cpp:313] Batch 44, accuracy = 0.84
+I1206 20:00:06.045753 11608 caffe.cpp:313] Batch 44, loss = 0.431558
+I1206 20:00:06.222393 11608 caffe.cpp:313] Batch 45, accuracy = 0.76
+I1206 20:00:06.222471 11608 caffe.cpp:313] Batch 45, loss = 0.524411
+I1206 20:00:06.406004 11608 caffe.cpp:313] Batch 46, accuracy = 0.81
+I1206 20:00:06.406132 11608 caffe.cpp:313] Batch 46, loss = 0.496434
+I1206 20:00:06.600334 11608 caffe.cpp:313] Batch 47, accuracy = 0.87
+I1206 20:00:06.600430 11608 caffe.cpp:313] Batch 47, loss = 0.329071
+I1206 20:00:06.802799 11608 caffe.cpp:313] Batch 48, accuracy = 0.76
+I1206 20:00:06.802922 11608 caffe.cpp:313] Batch 48, loss = 0.517006
+I1206 20:00:06.996711 11608 caffe.cpp:313] Batch 49, accuracy = 0.79
+I1206 20:00:06.996786 11608 caffe.cpp:313] Batch 49, loss = 0.489468
+I1206 20:00:06.996815 11608 caffe.cpp:318] Loss: 0.434855
+I1206 20:00:06.996840 11608 caffe.cpp:330] accuracy = 0.8156
+I1206 20:00:06.996898 11608 caffe.cpp:330] loss = 0.434855 (* 1 = 0.434855 loss)

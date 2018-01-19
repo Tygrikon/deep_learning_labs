@@ -1,0 +1,111 @@
+name: "SimpleFCN"
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "/home/glebg/dev/deep-learning/train.lst"
+    new_width: 150
+    new_height: 150
+    batch_size: 100
+  }
+}
+layer {
+  name: "dataset_name"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "/home/glebg/dev/deep-learning/test.lst"
+    new_width: 150
+    new_height: 150
+    batch_size: 100
+  }
+}
+layer {
+  name: "hidden1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden1"
+  inner_product_param {
+    num_output: 400
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "elu"
+  type: "ELU"
+  bottom: "hidden1"
+  top: "elu"
+}
+layer {
+  name: "hidden2"
+  type: "InnerProduct"
+  bottom: "elu"
+  top: "hidden2"
+  inner_product_param {
+    num_output: 50
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "tanh"
+  type: "TanH"
+  bottom: "hidden2"
+  top: "tanh"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "tanh"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}

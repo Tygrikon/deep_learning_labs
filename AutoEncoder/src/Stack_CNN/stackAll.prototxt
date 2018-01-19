@@ -1,0 +1,190 @@
+# Enter your network definition here.
+# Use Shift+Enter to update the visualization.
+name: "nNetCCN"
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../../train.lst"
+    new_width: 150
+    new_height: 150
+    is_color: 1
+    batch_size: 8
+    root_folder: "../../data/"
+  }
+}
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../../test.lst"
+    new_width: 150
+    new_height: 150
+    is_color: 1
+    batch_size: 240
+    root_folder: "../../data/"
+  }
+}
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 0.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 0.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 40
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+layer {
+  name: "conv2"
+  type: "Convolution"
+  bottom: "conv1"
+  top: "conv2"
+  param {
+    lr_mult: 1.0
+    decay_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+    decay_mult: 0.0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu2"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+
+#Deconvolution part
+layer {
+  name: "conv2t"
+  type: "Deconvolution"
+  bottom: "conv2"
+  top: "conv2t"
+  convolution_param {
+    num_output: 40
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "relu2tStack2"
+  type: "ReLU"
+  bottom: "conv2t"
+  top: "conv2t"
+}
+layer {
+  name: "flatdataStack2"
+  type: "Flatten"
+  bottom: "conv1"
+  top: "flatdataStack2"
+}
+layer {
+  name: "flatdataoutStack2"
+  type: "Flatten"
+  bottom: "conv2t"
+  top: "flatdataoutStack2"
+}
+layer {
+  name: "lossStack2"
+  type: "EuclideanLoss"
+  bottom: "flatdataoutStack2"
+  bottom: "flatdataStack2"
+  top: "lossStack2"
+}
+
+layer {
+  name: "conv1t"
+  type: "Deconvolution"
+  bottom: "conv1"
+  top: "conv1t"
+  convolution_param {
+    num_output: 3
+    kernel_size: 3
+    weight_filler {
+      type: "xavier"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0.1
+    }
+  }
+}
+layer {
+  name: "reluStack1"
+  type: "ReLU"
+  bottom: "conv1t"
+  top: "conv1t"
+}
+layer {
+  name: "flatdataStack1"
+  type: "Flatten"
+  bottom: "data"
+  top: "flatdataStack1"
+}
+layer {
+  name: "flatdataoutStack1"
+  type: "Flatten"
+  bottom: "conv1t"
+  top: "flatdataoutStack1"
+}
+layer {
+  name: "lossStack1"
+  type: "EuclideanLoss"
+  bottom: "flatdataoutStack1"
+  bottom: "flatdataStack1"
+  top: "lossStack1"
+}

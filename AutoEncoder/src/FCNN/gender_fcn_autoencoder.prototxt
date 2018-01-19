@@ -1,0 +1,111 @@
+name: "SimpleFCN"
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../../train.lst"
+    new_width: 150
+    new_height: 150
+    batch_size: 100
+    root_folder: "../../data/"
+  }
+}
+layer {
+  name: "gender"
+  type: "ImageData"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  image_data_param {
+    source: "../../test.lst"
+    new_width: 150
+    new_height: 150
+    batch_size: 100
+    root_folder: "../../data/"
+  }
+}
+layer {
+  name: "hidden"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "hidden"
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "sigm"
+  type: "Sigmoid"
+  bottom: "hidden"
+  top: "sigm"
+}
+layer {
+  name: "ip"
+  type: "InnerProduct"
+  bottom: "sigm"
+  top: "ip"
+  inner_product_param {
+    num_output: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "deHidden"
+  type: "InnerProduct"
+  bottom: "sigm"
+  top: "deHidden"
+  inner_product_param {
+    num_output: 67500
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "flatdata"
+  type: "Flatten"
+  bottom: "data"
+  top: "flatdata"
+}
+layer {
+  name: "loss"
+  type: "SigmoidCrossEntropyLoss"
+  bottom: "deHidden"
+  bottom: "flatdata"
+  top: "cross_entropy_loss"
+  loss_weight: 1
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip"
+  bottom: "label"
+  top: "accuracy"
+}
